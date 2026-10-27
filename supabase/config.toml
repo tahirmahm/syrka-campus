@@ -1,0 +1,16 @@
+project_id = "syrka-campus"
+
+[auth]
+enabled = true
+site_url = "https://www.syrka.co/cam"
+additional_redirect_urls = ["https://www.syrka.co/cam"]
+enable_signup = false
+minimum_password_length = 12
+password_requirements = "lower_upper_letters_digits_symbols"
+
+[auth.email]
+# Keep the email/password provider enabled; auth.enable_signup above blocks public signup.
+enable_signup = true
+
+[storage]
+file_size_limit = "10MiB"

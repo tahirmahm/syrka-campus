@@ -9,7 +9,10 @@ export default async function Portal({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await session();
+  const { user, memberships } = await session();
+  const demo = memberships.some(
+    (m) => m.institution_id === process.env.CAMPUS_DEMO_INSTITUTION_ID,
+  );
   return (
     <div className="shell">
       <aside>
@@ -51,7 +54,14 @@ export default async function Portal({
           <span>SYRKA / CAMPUS</span>
           <span>Academic life, connected.</span>
         </header>
-        <main id="main">{children}</main>
+        <main id="main">
+          {demo && (
+            <p className="notice" role="status">
+              DEMONSTRATION CAMPUS · Sample records · Shared demo access
+            </p>
+          )}
+          {children}
+        </main>
       </div>
     </div>
   );

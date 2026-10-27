@@ -32,3 +32,11 @@ Run `npm run test:production` to repeat the unauthenticated live smoke tests. Th
 ## New backend supplied by owner
 
 Owner supplied dedicated project reference `pftbpimhyophitfuzcxn` and its publishable key. The public Auth settings endpoint returns HTTP 200 with email authentication enabled. The Campus institutions endpoint returns PGRST205: schema not yet applied. The connected Supabase account cannot manage this project; a new CLI authentication is pending. Connection settings are saved only in ignored `.env.local`. Production variables are not activated before schema/security initialization.
+
+## Hosted backend activation
+
+Owner authenticated the Supabase CLI to the dedicated project. Eight migrations are now applied with exact source versions recorded in `supabase_migrations.schema_migrations`. Hosted API checks passed for structure/isolation, a simultaneous last-seat race, real private Storage upload/publication/signing, assignment submission and grade publication, assessment secrecy/marking, attendance/final results and user-metadata escalation denial.
+
+Two browser tests passed with a local production build using the real hosted backend: the administrator/faculty/student workflow and all three one-click demonstration roles. Praxis Institute and its approved administrator membership are separate from the demonstration campus. Production public keys and server-only encrypted demo settings have been configured; Git deployment of the updated interface and live authenticated smoke tests are the next release gate.
+
+Seventeen performance policy warnings were resolved by separating writer actions from existing read policies. The remaining `auth_leaked_password_protection` warning requires a paid Supabase plan; no upgrade was made. [Supabase password-security documentation](https://supabase.com/docs/guides/auth/password-security) confirms the Pro-plan requirement. Twelve-character mixed-character requirements are configured independently.
