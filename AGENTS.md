@@ -6,7 +6,7 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 
 - Dedicated Next.js App Router, React, strict TypeScript, Tailwind and Supabase Auth/Postgres/Storage. No paid APIs.
 - Production basePath `/campus`. Next Link and next/navigation redirect paths omit the prefix (Next adds it); plain links, API requests and assets include it exactly once. Revalidation uses the actual prefixed path.
-- Production source of truth must be private tahirmahm/syrka-campus, main branch. Subsequent development uses feature branches and reviewed PRs where practical.
+- Production source of truth is tahirmahm/syrka-campus (public for now by explicit user instruction on 27 October 2026), main branch. Subsequent development uses feature branches and reviewed PRs where practical.
 - Exactly one new Vercel project: syrka-campus. Import from GitHub; use automatic Git deployments, never an independent CLI production deployment.
 - No shared identity or database with Workspace. See docs/integrations.md.
 
@@ -32,7 +32,7 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 ## Verification and deployment
 
 - Run npm run lint, npm test, npm run build and npm run test:browser where applicable.
-- PGlite verifies SQL and RLS but not independent PostgreSQL sessions or hosted Auth/Storage. Add genuine multi-session race tests before the pilot.
+- PGlite verifies SQL and RLS. Run npm run test:postgres against an EMPTY disposable PostgreSQL database for independent-session registration races. Never target a hosted application database with the test harness. Hosted Auth/Storage still require separate verification.
 - Apply migrations only to dedicated Campus Supabase. Never modify Workspace or Syrka.V12 data.
 - Free tiers only. Never purchase, upgrade, enable paid addons, pause/delete existing projects or accept nonzero costs.
 - Required URL: https://www.syrka.co/campus. A vercel.app URL alone is insufficient.

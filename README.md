@@ -2,7 +2,7 @@
 
 A multi-tenant academic platform. This is an initial pilot implementation, not the complete Moodle/Canvas-scale product in the master directive.
 
-**Not deployed.** GitHub repository creation was rejected by the connected integration. The dedicated Supabase backend and GitHub-connected Vercel project have not been provisioned. See [status](docs/status.md) for scope and gaps.
+**Pilot milestone; backend provisioning blocked.** Source is in [tahirmahm/syrka-campus](https://github.com/tahirmahm/syrka-campus), public for now at the owner’s request. Supabase rejected dedicated project creation because the account already has two active free projects. See [status](docs/status.md) for current deployment evidence, scope and gaps.
 
 ## Development
 
@@ -29,9 +29,17 @@ SQL integration tests execute actual migrations under PostgreSQL-compatible PGli
 - `src/app`: student, faculty and administrator routes.
 - `src/lib`: authenticated sessions, validated actions and user-scoped Supabase access.
 - `supabase/migrations`: schema, RLS, transactional RPCs and private storage policies.
-- `tests`: SQL authorization and browser setup checks.
+- `tests`: SQL authorization, independent PostgreSQL race tests and browser setup checks.
 - `public/brand`: unmodified official source assets.
 - [Operations](docs/operations.md): provisioning, migrations, bootstrap and domain integration.
 - [Integration boundaries](docs/integrations.md): Workspace and Passport.
 
 No paid APIs are used. Existing Syrka applications and production infrastructure have not been modified.
+
+Run independent-session tests only against an **empty disposable** PostgreSQL 17 database:
+
+```sh
+CAMPUS_TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:55439/campus_test npm run test:postgres
+```
+
+The harness refuses databases with existing public tables and creates test Auth/Storage schemas. Never point it at production. GitHub CI provisions its own PostgreSQL service.

@@ -4,14 +4,14 @@ This is an initial local pilot implementation. The full master directive and pro
 
 ## Infrastructure
 
-| Item                  | Observed state                                                                                                                                                                                                                       |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| GitHub                | Repository creation attempted; integration denied createRepository. No new remote repository created and no push completed. Target: private tahirmahm/syrka-campus, main.                                                            |
-| Supabase              | Organization and projects inspected read-only. Organization selection requested and pending. Existing Syrka organization is Free with two active projects. No Campus project/reference exists; free capacity has not been confirmed. |
-| Vercel                | Projects and website ownership inspected read-only. No Campus project created, no deployment performed, no automatic deployments verified.                                                                                           |
-| Required public URL   | https://www.syrka.co/campus is not deployed by this work.                                                                                                                                                                            |
-| Existing applications | No repository, database, domain or deployment changed. Existing /workspace/tools returned HTTP 200 during inspection.                                                                                                                |
-| Cost                  | No purchases, upgrades, paid APIs or paid infrastructure activated.                                                                                                                                                                  |
+| Item                  | Observed state                                                                                                                                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub                | Existing tahirmahm/syrka-campus cloned successfully, main branch. Public for now by explicit owner instruction; attempted privacy change was denied by integration.                                         |
+| Supabase              | Owner selected Syrka organization. Cost quoted $0/month, but create_project rejected: owner has reached the two-active-free-project limit. No Campus project/reference exists. Existing projects preserved. |
+| Vercel                | Projects and website ownership inspected read-only. No Campus project created, no deployment performed, no automatic deployments verified.                                                                  |
+| Required public URL   | https://www.syrka.co/campus is not deployed by this work.                                                                                                                                                   |
+| Existing applications | No repository, database, domain or deployment changed. Existing /workspace/tools returned HTTP 200 during inspection.                                                                                       |
+| Cost                  | No purchases, upgrades, paid APIs or paid infrastructure activated.                                                                                                                                         |
 
 ## Implemented locally
 
@@ -38,7 +38,7 @@ This is an initial local pilot implementation. The full master directive and pro
 - Supabase security/performance advisors: not run, because the dedicated project does not exist.
 - GitHub CI workflow authored but not executed remotely.
 
-These checks do not establish hosted end-to-end behavior, full WCAG conformance or independent multi-session PostgreSQL concurrency safety.
+These checks do not establish hosted end-to-end behavior or full WCAG conformance.
 
 ## Missing functionality and limitations
 
@@ -50,12 +50,22 @@ These checks do not establish hosted end-to-end behavior, full WCAG conformance 
 - Catalog/admin lists are bounded to 100/200 records; full pagination/search scalability is pending.
 - Generated Supabase database types and more precise query DTOs are pending; strict TypeScript currently uses validated inputs and selected result-shape assertions in places.
 - Antivirus/quarantine, orphan upload cleanup, retention/backup policies, rate-limit hardening, full accessibility and load audits.
-- Independent PostgreSQL connection race tests and complete hosted student/faculty/admin browser journey.
+- Complete hosted student/faculty/admin browser journey.
 - Workspace/Passport integrations beyond ordinary external links.
 
 ## Next milestones
 
-1. Resolve repository creation permission and Supabase organization/free project capacity. Push this milestone and provision the dedicated backend.
+1. Resolve Supabase free project capacity without altering existing projects or paying; provision the dedicated backend.
 2. Apply migrations, generate types, run advisors, verify actual Auth/Storage APIs and race tests. Complete the two-institution hosted pilot journey.
 3. Complete assessment engine and academic records with authorization tests.
 4. Import the repository into exactly one Vercel project, verify Git automatic deployments, and test the minimal website proxy integration at the mandatory public URL.
+
+## Follow-up verification — current session
+
+- Corrected registration/submission success and error redirects to avoid doubled `/campus` prefixes.
+- Re-ran SQL authorization tests: 12 passing; lint and production build passed.
+- Re-ran Chromium setup/mobile tests: 2 passing.
+- Added PostgreSQL 17 independent-session tests: 5 passing (parent plus 4 races), covering last-seat capacity, duplicate enrollment, competing sections and waitlist placement. Tests observe actual server lock waits before releasing the first transaction.
+- CI now includes a disposable PostgreSQL service and the race suite. Remote CI results remain pending.
+- Required public `/campus` returned HTTP 404; existing `/workspace/tools` returned HTTP 200.
+- No hosted migrations or security advisors run: dedicated backend creation is blocked by Supabase free project limit.
