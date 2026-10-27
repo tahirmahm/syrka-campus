@@ -24,8 +24,8 @@ async function clearLayout(page: Page) {
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  const text = await page.locator("body").innerText();
-  expect(text).not.toMatch(/[↗→←↓◐]|\p{Extended_Pictographic}/u);
+  // Developer-owned strings are checked in ui-icons.test.ts; dynamic academic
+  // content may legitimately contain emoji and must not be rejected here.
 }
 async function demo(page: Page, role: string) {
   await page.goto("/cam/login");
@@ -297,3 +297,48 @@ test("Unknown pages stay light under a dark system preference", async ({
     ).violations,
   ).toEqual([]);
 });
+
+for (const role of ["student", "faculty", "administrator"]) {
+  test(`Workspace is a same-tab SVG link in ${role} desktop and mobile navigation`, async ({
+    page,
+  }) => {
+    await demo(page, role);
+    for (const width of [1440, 320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      const mobile = width < 1024;
+      if (mobile)
+        await page.getByRole("button", { name: "Open navigation" }).click();
+      const navigation = mobile
+        ? page.getByRole("dialog", { name: "Campus navigation" })
+        : page.getByRole("complementary", { name: "Campus sidebar" });
+      const workspace = navigation.getByRole("link", {
+        name: "Workspace",
+        exact: true,
+      });
+      await expect(workspace).toBeVisible();
+      await expect(workspace).toHaveAttribute(
+        "href",
+        "https://www.syrka.co/workspace",
+      );
+      expect(await workspace.getAttribute("target")).toBeNull();
+      await expect(workspace.locator("svg")).toHaveAttribute(
+        "stroke-width",
+        "1.7",
+      );
+      await expect(workspace.locator("svg")).toHaveAttribute("width", "18");
+      await expect(
+        navigation.getByText("Syrka Apps", { exact: true }),
+      ).toBeVisible();
+      await clearLayout(page);
+      await workspace.click();
+      await expect(page).toHaveURL("https://www.syrka.co/workspace");
+      await page.goto("/cam/dashboard");
+      await expect(
+        page.getByRole("heading", { name: "Dashboard", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("status", { name: "Demonstration environment" }),
+      ).toBeVisible();
+    }
+  });
+}

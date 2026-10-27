@@ -367,6 +367,11 @@ form p.small {
   text-transform: uppercase;
   margin: 8px 12px 10px;
 }
+.nav-apps {
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  padding-top: 12px;
+}
 .nav-item {
   display: flex;
   align-items: center;
