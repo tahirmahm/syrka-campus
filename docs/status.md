@@ -8,8 +8,8 @@ This is an initial local pilot implementation. The full master directive and pro
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GitHub                | Existing tahirmahm/syrka-campus cloned successfully, main branch. Public for now by explicit owner instruction; attempted privacy change was denied by integration.                                         |
 | Supabase              | Owner selected Syrka organization. Cost quoted $0/month, but create_project rejected: owner has reached the two-active-free-project limit. No Campus project/reference exists. Existing projects preserved. |
-| Vercel                | Campus creation rejected with HTTP 403 (no project-creation permission). CLI fallback lacks authentication. No Campus project/deployment exists; Git automatic deployment unverified.                       |
-| Required public URL   | https://www.syrka.co/campus is not deployed by this work.                                                                                                                                                   |
+| Vercel                | CLI authenticated by owner. One Hobby project created: syrka-campus (prj_Z0PTqNUtOrCSkmaq7M0ySRbnTB3u), linked to GitHub main. Deployment verification pending.                                             |
+| Required public URL   | https://www.syrka.co/cam is not deployed by this work.                                                                                                                                                      |
 | Existing applications | No repository, database, domain or deployment changed. Existing /workspace/tools returned HTTP 200 during inspection.                                                                                       |
 | Cost                  | No purchases, upgrades, paid APIs or paid infrastructure activated.                                                                                                                                         |
 
@@ -17,14 +17,16 @@ This is an initial local pilot implementation. The full master directive and pro
 
 - Next.js App Router, React, strict TypeScript, Tailwind, responsive shell, system/manual dark appearance, labelled forms and keyboard focus.
 - Unmodified original wordmark and symbol; source files verified byte-for-byte against the attachments.
-- `/campus` basePath, prefixed assets, isolated auth cookie name/path, no-store authenticated responses, Supabase password login/logout and session refresh code.
+- `/cam` basePath, prefixed assets, isolated auth cookie name/path, no-store authenticated responses, Supabase password login/logout and session refresh code.
 - Active institution membership resolution, verified institution switch, server role checks and tenant RLS.
 - Departments, terms, courses, sections, faculty assignments and registration-window administration; privileged membership grants.
 - Searchable catalog, term filter, transactional registration/withdrawal, capacity, waitlists, promotion, prerequisites and duplicate registration checks.
 - Course overview, weekly module creation, HTTPS resources, announcements, private syllabus/reading uploads and short-lived signed download route.
 - Text assignment drafts/final submissions, server/database deadlines and attempt limits, faculty review, manual grading, published feedback and student grade view.
 - Enrollment oversight and audit trail.
-- Versioned schema includes future programs, quizzes, questions, answers, attempts, categories, attendance and calendar tables. These future-phase tables deny all access and are not completed features.
+- Quizzes/exams: all five question types, timed attempts, attempt limits, randomized ordering, immutable snapshots, save/final submission, automatic marking for objective questions and short answers, manual marking, result publication. Expired attempts finalize only previously saved responses.
+- Attendance, course calendars, weighted grading categories/items, final course results and staff CSV export. Student results and attendance remain confidential under RLS.
+- Faculty can publish/unpublish existing delivery content. Administrators can enable waitlists when creating offerings.
 
 ## Verification
 
@@ -32,19 +34,19 @@ This is an initial local pilot implementation. The full master directive and pro
 - Production build with strict TypeScript: passed.
 - `npm test`: 12 passing tests (parent journey test plus 11 scenarios) against the actual migrations under PGlite. Covers two institutions, tenant consistency, role escalation prevention, duplicate/capacity/waitlist rules, deadlines, text submission limits, foreign administrator rejection, grade confidentiality, admin oversight, unreleased assessment denial and private course-file policies.
 - `npm run test:browser`: 2 passing Chromium tests covering exact basePath redirect behavior, protected route setup behavior, actual wordmark loading and mobile width.
-- Browser verification caught and fixed double-prefix redirects. Next navigation redirects must omit the `/campus` prefix because Next.js adds it.
+- Browser verification caught and fixed double-prefix redirects. Next navigation redirects must omit the `/cam` prefix because Next.js adds it.
 - `npm audit --omit=dev`: 0 reported vulnerabilities.
 - Five migrations successfully loaded by SQL integration tests. None applied to hosted Supabase.
 - Supabase security/performance advisors: not run, because the dedicated project does not exist.
-- GitHub CI workflow authored but not executed remotely.
+- PR #1 GitHub CI completed successfully. Current /cam release checks pending.
 
 These checks do not establish hosted end-to-end behavior or full WCAG conformance.
 
 ## Missing functionality and limitations
 
-- Full quizzes/exams/question banks, timed attempts, randomization and automatic marking.
-- Rubrics, weighted/final gradebooks, exports, attendance, calendar and academic-history workflows.
-- Student file submissions, rich syllabus editing, editing/removal/reordering of delivery content and explicit publication management beyond create/save.
+- Question-bank editing/import, reusable bank libraries, rubrics and advanced exam accommodations.
+- Rubrics, official transcript/academic-history completion and configurable institutional grading scales.
+- Student file submissions, rich syllabus editing, editing/removal/reordering of delivery content and rich content editing/reordering.
 - Timetable conflict validation, program-specific eligibility and configurable institutional grading/registration policies.
 - Self-service institution onboarding/profile administration, account recovery/invitation flows and multi-role membership within one institution (one role per institution currently).
 - Catalog/admin lists are bounded to 100/200 records; full pagination/search scalability is pending.
@@ -62,12 +64,18 @@ These checks do not establish hosted end-to-end behavior or full WCAG conformanc
 
 ## Follow-up verification — current session
 
-- Corrected registration/submission success and error redirects to avoid doubled `/campus` prefixes.
+- Corrected registration/submission success and error redirects to avoid doubled `/cam` prefixes.
 - Re-ran SQL authorization tests: 12 passing; lint and production build passed.
 - Re-ran Chromium setup/mobile tests: 2 passing.
 - Added PostgreSQL 17 independent-session tests: 5 passing (parent plus 4 races), covering last-seat capacity, duplicate enrollment, competing sections and waitlist placement. Tests observe actual server lock waits before releasing the first transaction.
 - CI now includes a disposable PostgreSQL service and the race suite. PR #1 remote lint, SQL, PostgreSQL and build steps passed; browser installation/checks were still running at this documentation update.
-- Required public `/campus` returned HTTP 404; existing `/workspace/tools` returned HTTP 200.
+- Required public `/cam` returned HTTP 404; existing `/workspace/tools` returned HTTP 200.
 - No hosted migrations or security advisors run: dedicated backend creation is blocked by Supabase free project limit.
 
 - Production website inspection identifies `tahirmahm/syrka.v12` main commit `476af48f52b4ae0f80dfad9ccf96d1ef1c3b75d3`, deployed via Git to `syrka12`. No website changes applied; there is no verified Campus origin for a proxy rule.
+
+## /cam release in progress
+
+Owner changed the requested public path to `https://www.syrka.co/cam`. Application base path, asset URLs, private cookie scopes, cache invalidation and browser tests now use `/cam`.
+
+Two new migrations implement assessments and academic records. Fifteen SQL tests pass locally, including assessment secrecy, immutable exam content, expiry behavior, automatic/manual marking, attendance isolation and final-grade publication. Hosted database migrations remain blocked by free project capacity.

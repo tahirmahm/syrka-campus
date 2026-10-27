@@ -14,7 +14,7 @@ export async function proxy(request: NextRequest) {
     {
       cookieOptions: {
         name: "syrka-campus-auth",
-        path: "/campus",
+        path: "/cam",
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
       },

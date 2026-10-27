@@ -22,7 +22,7 @@ export async function register(form: FormData) {
     redirect(
       `/registration?institution=${tenant}&notice=${encodeURIComponent(error.message)}`,
     );
-  revalidatePath("/campus/registration");
+  revalidatePath("/cam/registration");
   redirect(`/registration?institution=${tenant}&notice=Registration+updated`);
 }
 export async function submit(form: FormData) {
@@ -40,7 +40,7 @@ export async function submit(form: FormData) {
     redirect(
       `/courses/${offering}?institution=${tenant}&notice=${encodeURIComponent(error.message)}`,
     );
-  revalidatePath(`/campus/courses/${offering}`);
+  revalidatePath(`/cam/courses/${offering}`);
   redirect(`/courses/${offering}?institution=${tenant}&notice=Work+saved`);
 }
 export async function grade(form: FormData) {
@@ -56,7 +56,7 @@ export async function grade(form: FormData) {
     publish: form.get("publish") === "on",
   });
   if (error) throw new Error(error.message);
-  revalidatePath(`/campus/courses/${offering}`);
+  revalidatePath(`/cam/courses/${offering}`);
 }
 export async function createDelivery(form: FormData) {
   const tenant = uuid.parse(form.get("tenant")),
@@ -109,7 +109,7 @@ export async function createDelivery(form: FormData) {
           : { ...base, body: text(form, "body") };
   const { error } = await db.from(kind).insert(values);
   if (error) throw new Error(error.message);
-  revalidatePath(`/campus/courses/${offering}`);
+  revalidatePath(`/cam/courses/${offering}`);
 }
 export async function createStructure(form: FormData) {
   const tenant = uuid.parse(form.get("tenant"));
@@ -149,10 +149,13 @@ export async function createStructure(form: FormData) {
           ? new Date(value + "Z").toISOString()
           : value;
   }
-  if (kind === "offerings") row.published = form.get("published") === "on";
+  if (kind === "offerings") {
+    row.published = form.get("published") === "on";
+    row.waitlist_enabled = form.get("waitlist_enabled") === "on";
+  }
   const { error } = await db.from(kind).insert(row);
   if (error) throw new Error(error.message);
-  revalidatePath("/campus/admin");
+  revalidatePath("/cam/admin");
 }
 export async function membershipChange(form: FormData) {
   const tenant = uuid.parse(form.get("tenant"));
@@ -165,7 +168,7 @@ export async function membershipChange(form: FormData) {
     enabled: form.get("active") === "on",
   });
   if (error) throw new Error(error.message);
-  revalidatePath("/campus/admin");
+  revalidatePath("/cam/admin");
 }
 export async function uploadMaterial(form: FormData) {
   const tenant = uuid.parse(form.get("tenant")),
@@ -223,7 +226,7 @@ export async function uploadMaterial(form: FormData) {
     throw new Error(
       "File uploaded but resource could not be linked. Contact your administrator.",
     );
-  revalidatePath(`/campus/courses/${offering}`);
+  revalidatePath(`/cam/courses/${offering}`);
 }
 
 export async function switchInstitution(form: FormData) {
@@ -232,10 +235,29 @@ export async function switchInstitution(form: FormData) {
   if (!membership) throw new Error("Institution access required");
   const { cookies } = await import("next/headers");
   (await cookies()).set("campus-institution", tenant, {
-    path: "/campus",
+    path: "/cam",
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
   });
   redirect(`/dashboard?institution=${tenant}`);
+}
+
+export async function publishDelivery(form: FormData) {
+  const tenant = uuid.parse(form.get("tenant")),
+    offering = uuid.parse(form.get("offering"));
+  const { db } = await session(tenant);
+  const table = z
+    .enum(["modules", "materials", "assignments", "announcements"])
+    .parse(form.get("kind"));
+  const { error } = await db
+    .from(table)
+    .update({ published: form.get("published") === "true" })
+    .eq("institution_id", tenant)
+    .eq("offering_id", offering)
+    .eq("id", uuid.parse(form.get("record")))
+    .select("id")
+    .single();
+  if (error) throw new Error("Publication failed");
+  revalidatePath(`/cam/courses/${offering}`);
 }

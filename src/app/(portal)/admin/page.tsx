@@ -131,6 +131,12 @@ export default async function Admin({
               ))}
               {f.kind === "offerings" && (
                 <label>
+                  <input type="checkbox" name="waitlist_enabled" /> Enable
+                  waitlist
+                </label>
+              )}
+              {f.kind === "offerings" && (
+                <label>
                   <input type="checkbox" name="published" /> Publish offering
                 </label>
               )}

@@ -4,7 +4,7 @@ export default defineConfig({
   use: { baseURL: "http://127.0.0.1:3000" },
   webServer: {
     command: "npm run start -- --hostname 127.0.0.1",
-    url: "http://127.0.0.1:3000/campus/login",
+    url: "http://127.0.0.1:3000/cam/login",
     reuseExistingServer: false,
   },
   reporter: "list",

@@ -11,7 +11,7 @@ export default async function Login({
     <main id="main" className="auth">
       <section className="auth-story">
         <Image
-          src="/campus/brand/wordmark.jpg"
+          src="/cam/brand/wordmark.jpg"
           width={520}
           height={170}
           alt="Syrka"

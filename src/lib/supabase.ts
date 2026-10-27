@@ -16,7 +16,7 @@ export async function database() {
     {
       cookieOptions: {
         name: "syrka-campus-auth",
-        path: "/campus",
+        path: "/cam",
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
       },

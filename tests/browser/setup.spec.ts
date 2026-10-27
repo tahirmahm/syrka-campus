@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-test("Unconfigured deployment fails closed and preserves /campus routing", async ({
+test("Unconfigured deployment fails closed and preserves /cam routing", async ({
   page,
 }) => {
-  await page.goto("/campus/dashboard");
+  await page.goto("/cam/dashboard");
   await expect(page).toHaveURL(
-    /^http:\/\/127\.0\.0\.1:3000\/campus\/login\?notice=setup$/,
+    /^http:\/\/127\.0\.0\.1:3000\/cam\/login\?notice=setup$/,
   );
   await expect(
     page.getByRole("heading", { name: "Continue your journey." }),
@@ -19,15 +19,15 @@ test("Unconfigured deployment fails closed and preserves /campus routing", async
     await image.evaluate((el: HTMLImageElement) => el.naturalWidth),
   ).toBeGreaterThan(0);
   for (const route of ["courses", "registration", "grades", "admin"]) {
-    await page.goto(`/campus/${route}`);
+    await page.goto(`/cam/${route}`);
     await expect(page).toHaveURL(
-      /^http:\/\/127\.0\.0\.1:3000\/campus\/login(?:\?|$)/,
+      /^http:\/\/127\.0\.0\.1:3000\/cam\/login(?:\?|$)/,
     );
   }
 });
 test("Login remains usable at a mobile width", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/campus/login");
+  await page.goto("/cam/login");
   await expect(page.getByLabel("Email address")).toBeVisible();
   expect(
     await page.evaluate(

@@ -15,6 +15,11 @@ export default async function Grades({
     )
     .eq("institution_id", membership.institution_id);
   if (error) throw new Error("Grades unavailable");
+  const { data: finals, error: finalError } = await db
+    .from("course_grades")
+    .select("id,percentage,feedback,published,offerings(courses(code,title))")
+    .eq("institution_id", membership.institution_id);
+  if (finalError) throw new Error("Course results unavailable");
   return (
     <>
       <PageTop
@@ -26,6 +31,26 @@ export default async function Grades({
         memberships={memberships}
         current={membership.institution_id}
       />
+      <section className="card">
+        <h2>Final course results</h2>
+        {finals?.map((g) => {
+          const o = g.offerings as unknown as {
+            courses: { code: string; title: string };
+          };
+          return (
+            <div className="row" key={g.id}>
+              <span>
+                {o.courses.code} · {o.courses.title}
+              </span>
+              <span>
+                {g.percentage}% · {g.feedback} ·{" "}
+                {g.published ? "Published" : "Draft"}
+              </span>
+            </div>
+          );
+        })}
+        {!finals?.length && <Empty>No published final results.</Empty>}
+      </section>
       <div className="card table-wrap">
         <table>
           <thead>
