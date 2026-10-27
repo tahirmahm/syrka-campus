@@ -38,3 +38,11 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 - Required URL: https://www.syrka.co/cam. A vercel.app URL alone is insufficient.
 - Inspect the existing website before integration. Preserve /, /workspace and /workspace/tools. Only a tested minimal Campus proxy change is authorized. Avoid DNS changes.
 - Report incomplete features and blockers accurately. No production, advisor, end-to-end or CI claims without observed evidence.
+
+## Hosted backend and demo
+
+- Dedicated Campus project is pftbpimhyophitfuzcxn (EU West 1). Never target the two existing Syrka projects.
+- Server-only demo credentials establish normal sessions; verify expected membership and role in the dedicated demonstration institution. Never use a service-role key for normal requests or expose demo passwords through NEXT_PUBLIC variables.
+- Praxis Institute is real institutional data; demo/verification institutions are separate. Do not reset or seed real institutions as demonstrations.
+- Hosted verification scripts require explicit private operator credential/fixture files and mutate only their own verification records. Keep all such files ignored and out of logs.
+- Supabase breached-password protection is a known Pro-only advisor warning; do not upgrade to remove it. Minimum password strength is configured independently.

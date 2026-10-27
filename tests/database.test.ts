@@ -19,7 +19,7 @@ const ids = {
 test("Two institutions: pilot journey and authorization boundaries", async (t) => {
   const db = new PGlite();
   await db.exec(
-    `create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;`,
+    `create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key, email text, encrypted_password text, email_change text); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;`,
   );
   await db.exec(
     `create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);alter table storage.objects enable row level security;grant usage on schema storage to authenticated;grant select,insert on storage.objects to authenticated;`,
@@ -725,6 +725,36 @@ test("Two institutions: pilot journey and authorization boundaries", async (t) =
           ids.assignment,
         ]),
         /Deadline passed/,
+      );
+    },
+  );
+  await t.test(
+    "Shared demo identities and roles cannot be changed by visitors",
+    async () => {
+      await db.exec("reset role");
+      await db.query(
+        "insert into campus_private.demo_accounts(user_id,institution_id) values($1,$2)",
+        [ids.student, ids.a],
+      );
+      await assert.rejects(
+        db.query(
+          "update auth.users set encrypted_password='changed' where id=$1",
+          [ids.student],
+        ),
+        /demonstration identities/,
+      );
+      await as(ids.admin);
+      await assert.rejects(
+        db.query("select set_membership($1,$2,'admin',false)", [
+          ids.a,
+          ids.student,
+        ]),
+        /configuration is fixed/,
+      );
+      await as(ids.student);
+      await assert.rejects(
+        db.query("select * from campus_private.demo_accounts"),
+        /permission denied/,
       );
     },
   );

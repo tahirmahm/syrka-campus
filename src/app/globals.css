@@ -472,3 +472,12 @@ details form {
     padding: 20px;
   }
 }
+.demo-access {
+  margin-top: 32px;
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.demo-access .toolbar {
+  flex-wrap: wrap;
+}

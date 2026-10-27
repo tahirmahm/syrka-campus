@@ -2,7 +2,7 @@
 
 A multi-tenant academic platform. Pilot development includes registration, course delivery, text assignments, timed assessments, marking, attendance, calendars and weighted course results. Hosted institutional acceptance remains pending.
 
-**Deployed at [www.syrka.co/cam](https://www.syrka.co/cam), currently in backend-setup mode.** Source is public for now at the owner’s request. Vercel is connected to GitHub main; the existing Syrka website proxies `/cam` to the dedicated Campus deployment. Supabase rejected dedicated backend creation because the account already has two active free projects. Sign-in and hosted academic operations remain unavailable. See [deployment verification](docs/deployment-verification.md) and [status](docs/status.md).
+**Public URL: [www.syrka.co/cam](https://www.syrka.co/cam).** GitHub main deploys to the dedicated Hobby Vercel project; the Syrka website proxies `/cam`. The owner-provided EU Supabase backend is initialized and hosted pilot tests pass. The current release adds one-click student/faculty/administrator demo access in a separate sample institution and one-time setup for the Praxis Institute administrator. See [status](docs/status.md) and [verification](docs/deployment-verification.md) for exact release evidence and remaining scope.
 
 ## Development
 
@@ -24,7 +24,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-SQL integration tests execute actual migrations under PostgreSQL-compatible PGlite using authenticated identities in two institutions. Hosted authentication, Storage API behavior and independent concurrent sessions require dedicated Supabase verification.
+SQL integration tests execute actual migrations under PostgreSQL-compatible PGlite using authenticated identities in two institutions. Hosted Auth/Storage and the pilot journey have separate verification scripts; independent session races run against disposable PostgreSQL.
 
 - `src/app`: student, faculty and administrator routes.
 - `src/lib`: authenticated sessions, validated actions and user-scoped Supabase access.
@@ -45,3 +45,5 @@ CAMPUS_TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:55439/cam_test npm run 
 The harness refuses databases with existing public tables and creates test Auth/Storage schemas. Never point it at production. GitHub CI provisions its own PostgreSQL service.
 
 Live unauthenticated routing checks: `npm run test:production`.
+
+Hosted pilot browser tests: `CAMPUS_TEST_FIXTURE_PATH=<private fixture> npm run test:hosted`. The fixture and administrator keys must remain outside Git.

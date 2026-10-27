@@ -1,58 +1,45 @@
-# Provisioning and release
+# Operations
 
-## Access blockers
+## Targets and cost
 
-1. GitHub repository now exists and is public at the owner’s explicit request. Do not change visibility without new instructions.
-2. Owner selected Syrka organization (`xxwikrftscbssryvcydh`). Cost lookup quoted $0/month, but creation of Syrka Campus in eu-west-1 was rejected because owner tahirmahm has reached the two-active-free-project limit. Do not retry without changed capacity; do not pause, delete, reuse or upgrade existing projects.
-3. Hosted migrations, Auth/Storage verification and security advisors remain blocked until a dedicated zero-cost project can be created.
-4. Owner authenticated Vercel CLI. The Hobby project `syrka-campus` (`prj_Z0PTqNUtOrCSkmaq7M0ySRbnTB3u`) now exists and is connected to GitHub main. Exactly one Vercel `syrka-campus` project is authorized, directly connected to GitHub main. Check for an existing project before creating. A deployment without backend configuration is setup-only and is not a completed pilot.
+Campus source is tahirmahm/syrka-campus, main. Its sole Vercel project is `syrka-campus` (`prj_Z0PTqNUtOrCSkmaq7M0ySRbnTB3u`), Hobby, GitHub-connected. Public URL: https://www.syrka.co/cam.
 
-## Database and auth
+Dedicated Supabase project: `pftbpimhyophitfuzcxn`, eu-west-1, supplied by the owner. Never apply Campus migrations to `ejzymrrfyezvdiocwsew` or `zguejzlseldovdssiumn`. Preserve zero-cost infrastructure; no upgrades/add-ons.
 
-Check installed CLI `--help`, link only the new project, and apply versioned migrations. Verify remote migration history. Never target `ejzymrrfyezvdiocwsew` or `zguejzlseldovdssiumn`.
+## Migrations and configuration
 
-Use email/password Auth. For the institutional pilot disable public signup and provision users through the dashboard's normal password setup flow. Canonical site URL: `https://www.syrka.co/cam`. Self-service invitations and recovery are not yet implemented. Configure the canonical production site URL in the future dedicated project; do not point the hosted deployment at a local test stack.
+Eight version-controlled migrations are applied and recorded in `supabase_migrations.schema_migrations`. TCP connections from this environment were refused. The CLI's HTTPS Management API query path was used to apply each migration and its exact filename/version history within a transaction. The CLI's unused database-connection preflight required a resolver-only placeholder; that value was never used to authenticate to PostgreSQL. Do not mistake it for a database credential.
 
-Bootstrap each institution and initial administrator through an operator transaction after creating the Auth account:
+Authenticate the CLI deliberately, link the exact project, inspect history before applying new migrations and never reapply existing versions. CLI `--help` is the command reference. Run security/performance advisors after schema changes. `supabase/config.toml` declares only intended auth/storage settings; undeclared settings must remain unchanged.
 
-```sql
-begin;
-with institution as (
-  insert into public.institutions(name,slug)
-  values ('Institution name','institution-slug') returning id
-)
-insert into public.memberships(institution_id,user_id,role)
-select id, '<existing-auth-user-uuid>'::uuid, 'admin' from institution;
-commit;
-```
+Public Vercel variables are `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. No privileged database key is required by normal app requests. Preview deployments intentionally do not inherit production academic credentials.
 
-Verify the project and intended UUID first. Subsequent academic configuration and role grants use the admin UI. The membership RPC prevents self-modification. Institution creation and initial policy setup are operator tasks in this milestone.
+Auth site URL is https://www.syrka.co/cam. Public signup is disabled while the email/password provider remains enabled. Password requirements are 12 characters with lowercase, uppercase, digits and symbols. Supabase's leaked-password protection requires Pro, so it remains disabled under the free-tier policy.
 
-Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in Vercel. No service-role key is needed by this app. Keep preview and production data separate.
+## Accounts and institutions
 
-Run Supabase security/performance advisors after migration, resolving material findings. Repeat tests using hosted Auth accounts from two institutions. Verify actual Storage API uploads and signed downloads, not only SQL policies.
+Praxis Institute and the owner-approved administrator were bootstrapped through authenticated operator access. Account creation uses the Auth Admin API; membership roles are database records, never user metadata. One-time setup links use `/cam/auth/confirm?type=recovery&token_hash=...`, establish a normal session, then route to `/cam/account/password`. Never put setup tokens or generated passwords in Git, issue bodies or shared logs.
 
-## Domain integration
+To bootstrap future institutions, create the Auth identity through an authorized account workflow, then insert the institution and initial administrator in one scoped transaction. Subsequent roles use the administrator UI. There is no public self-service role-elevation endpoint.
 
-Read-only inspection confirmed Vercel project `syrka12` (`prj_1cL7osrSUHKR2FutAhjdHsn3wGcN`) owns www.syrka.co. Its project routes API returned no routes. The website’s `vercel.json` contains the existing Workspace proxy rules; preserve these exactly. `tahirmahm/syrka.v12/next.config.mjs` was empty on both main and the inspected default branch. The default branch was `claude/build-syrka-system-DVli3`; subsequent deployment inspection confirms the live production source is main commit `476af48f52b4ae0f80dfad9ccf96d1ef1c3b75d3`, with commit message “Route syrka.co/workspace to Syrka Workspace”. Existing `/workspace/tools` returned HTTP 200 with matched path `/tools`, so inspect the full deployed configuration before changing routes.
+## Demonstration campus
 
-Campus builds with `/cam` basePath. Once the actual Campus hostname is verified, merge the following proposed rules into the website configuration, preserving its existing rules and ordering:
+The demonstration institution is separate from Praxis Institute and contains clearly labelled sample records. Student, faculty and administrator demo buttons establish ordinary Supabase sessions. The server verifies that each configured demo identity has the expected active role in `CAMPUS_DEMO_INSTITUTION_ID` before redirecting.
 
-```js
-{ source: '/cam', destination: 'https://<verified-campus-host>/cam' },
-{ source: '/cam/:path*', destination: 'https://<verified-campus-host>/cam/:path*' },
-```
+`CAMPUS_DEMO_{STUDENT,FACULTY,ADMIN}_{EMAIL,PASSWORD}` and the demo institution ID are server-only settings. Passwords must never use NEXT_PUBLIC prefixes. The provisioning script deliberately refuses to overwrite an existing demo institution. Shared demo records can change as visitors explore; do not enter private information there. An authorized operator can provision/reset demo content separately from real institutional data.
 
-The corresponding `/cam` rules have been applied with verified origin `https://syrka-campus.vercel.app`; see deployment-verification.md. Never commit a placeholder hostname. Do not strip or duplicate the prefix. Verify direct loads, refresh, RSC navigation, server actions, auth cookies, `/cam/_next/*` and signed file downloads. If proxy origin validation requires configuration, allow only the exact canonical website origin; never wildcard origins.
+## Verification
 
-Test existing `/`, `/workspace`, `/workspace/tools` before and after integration. Prepare a minimal change in the website repository, test it and commit using its normal deployment process. No DNS change is needed. Do not redeploy or alter Workspace.
+- `npm test`, `npm run lint`, `npm run build`, `npm run test:browser`.
+- `npm run test:postgres`: only an empty disposable PostgreSQL database, via `CAMPUS_TEST_DATABASE_URL`.
+- `python tests/hosted/verify.py`: explicitly creates isolated verification institutions and test Auth users in the dedicated backend. It requires ignored `.env.local` and `CAMPUS_TEST_ADMIN_KEYS_FILE`, an operator-created Supabase CLI api-keys JSON file. Never run automatically against an unrelated project or commit the keys file.
+- `npm run test:hosted`: requires the private verification fixture path in `CAMPUS_TEST_FIXTURE_PATH`. Uses the local built app by default, or `CAMPUS_BROWSER_BASE_URL=https://www.syrka.co` for live production checks. These tests mutate only verification/demo records.
+- `npm run test:production`: read-only public routing/mobile tests; no academic writes.
 
-Verify two successive GitHub pushes produce Vercel deployments with the expected commit SHAs. Production is complete only when www.syrka.co/cam and the full hosted pilot journey pass.
+## Website proxy
 
-## Remaining release gates
+`tahirmahm/syrka.v12/vercel.json` contains two `/cam` rules targeting `https://syrka-campus.vercel.app/cam` with the prefix retained exactly once. Preserve existing Workspace rules, cron entries, `/`, `/workspace` and `/workspace/tools`. No DNS change is needed. Do not independently redeploy Workspace.
 
-- Independent session races for assessment attempt limits and concurrent academic operations; registration races pass.
-- Hosted Auth account setup, refresh, sign-out and Workspace cookie isolation.
-- Complete browser student/faculty/admin journey with two institutions.
-- Advisors, Storage API verification, file retention and orphan cleanup.
-- Accessibility, performance/load testing, recovery and institutional policy configuration.
+Campus uses `/cam` basePath. Next Link/next-navigation destinations omit the prefix; plain asset/download URLs, cache invalidation and cookie paths include it. Test direct loads, refresh, server actions and downloads through the canonical website after releases. GitHub main remains production's source of truth.
+
+Shared demonstration passwords, email identities and membership roles are protected by an operator-managed private registry and database triggers. Visitors can explore academic workflows without disabling the shared demo logins. Operators must deliberately unregister those protections before rotating demo credentials.

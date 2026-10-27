@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { login } from "./actions";
+import { login, demoLogin } from "./actions";
 import { configured } from "@/lib/supabase";
 export default async function Login({
   searchParams,
@@ -44,6 +44,12 @@ export default async function Login({
             once setup is complete.
           </p>
         )}
+        {notice === "invalid-link" && (
+          <p role="alert" className="notice">
+            This account setup link has expired or has already been used. Ask
+            your administrator for a new link.
+          </p>
+        )}
         {notice === "invalid" && (
           <p role="alert" className="notice">
             Unable to sign in. Check your email and password.
@@ -67,6 +73,29 @@ export default async function Login({
             Sign in <span>→</span>
           </button>
         </form>
+        {configured() && process.env.CAMPUS_DEMO_INSTITUTION_ID && (
+          <section className="demo-access" aria-label="Demo access">
+            <h3>Take a look around.</h3>
+            <p className="small">
+              Explore a demonstration institution with sample records. No email
+              verification needed.
+            </p>
+            <form action={demoLogin}>
+              <div className="toolbar">
+                {(["student", "faculty", "admin"] as const).map((role) => (
+                  <button key={role} name="role" value={role} className="quiet">
+                    Explore as {role === "admin" ? "administrator" : role} →
+                  </button>
+                ))}
+              </div>
+            </form>
+          </section>
+        )}
+        {notice === "demo-unavailable" && (
+          <p className="notice" role="alert">
+            Demo access is temporarily unavailable. Please try again later.
+          </p>
+        )}
         <p className="small">
           Accounts and institutional access are managed by your institution.
           Contact your academic administrator for assistance.

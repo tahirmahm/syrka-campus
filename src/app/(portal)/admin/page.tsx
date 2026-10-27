@@ -12,6 +12,7 @@ export default async function Admin({
   if (membership.role !== "admin")
     return <Empty>Institutional administrator access is required.</Empty>;
   const tenant = membership.institution_id;
+  const demo = tenant === process.env.CAMPUS_DEMO_INSTITUTION_ID;
   const results = await Promise.all(
     [
       "departments",
@@ -151,29 +152,37 @@ export default async function Admin({
           Users must first have a Campus authentication account. Only
           administrators can grant institutional roles.
         </p>
-        <details>
-          <summary>Add or update a membership</summary>
-          <form action={membershipChange}>
-            <Hidden tenant={tenant} />
-            <label>
-              Authentication user UUID
-              <input name="user_id" required />
-            </label>
-            <label>
-              Role
-              <select name="role">
-                <option>student</option>
-                <option>faculty</option>
-                <option>admin</option>
-              </select>
-            </label>
-            <label>
-              <input type="checkbox" name="active" defaultChecked /> Active
-              membership
-            </label>
-            <button>Save membership →</button>
-          </form>
-        </details>
+        {demo && (
+          <p className="notice">
+            Demonstration roles are fixed. You can explore academic
+            configuration and records without changing shared login access.
+          </p>
+        )}
+        {!demo && (
+          <details>
+            <summary>Add or update a membership</summary>
+            <form action={membershipChange}>
+              <Hidden tenant={tenant} />
+              <label>
+                Authentication user UUID
+                <input name="user_id" required />
+              </label>
+              <label>
+                Role
+                <select name="role">
+                  <option>student</option>
+                  <option>faculty</option>
+                  <option>admin</option>
+                </select>
+              </label>
+              <label>
+                <input type="checkbox" name="active" defaultChecked /> Active
+                membership
+              </label>
+              <button>Save membership →</button>
+            </form>
+          </details>
+        )}
         <div className="card table-wrap">
           <table>
             <thead>
