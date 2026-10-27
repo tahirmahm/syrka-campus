@@ -2,7 +2,7 @@
 
 A multi-tenant academic platform. Pilot development includes registration, course delivery, text assignments, timed assessments, marking, attendance, calendars and weighted course results. Hosted institutional acceptance remains pending.
 
-**Pilot milestone; backend provisioning blocked.** Source is in [tahirmahm/syrka-campus](https://github.com/tahirmahm/syrka-campus), public for now at the owner’s request. Supabase rejected dedicated project creation because the account already has two active free projects. See [status](docs/status.md) for current deployment evidence, scope and gaps.
+**Deployed at [www.syrka.co/cam](https://www.syrka.co/cam), currently in backend-setup mode.** Source is public for now at the owner’s request. Vercel is connected to GitHub main; the existing Syrka website proxies `/cam` to the dedicated Campus deployment. Supabase rejected dedicated backend creation because the account already has two active free projects. Sign-in and hosted academic operations remain unavailable. See [deployment verification](docs/deployment-verification.md) and [status](docs/status.md).
 
 ## Development
 
@@ -34,7 +34,7 @@ SQL integration tests execute actual migrations under PostgreSQL-compatible PGli
 - [Operations](docs/operations.md): provisioning, migrations, bootstrap and domain integration.
 - [Integration boundaries](docs/integrations.md): Workspace and Passport.
 
-No paid APIs are used. Existing Syrka applications and production infrastructure have not been modified.
+No paid APIs are used. The existing website received only the two authorized Campus proxy rules. Workspace source, databases and DNS remain unchanged.
 
 Run independent-session tests only against an **empty disposable** PostgreSQL 17 database:
 
@@ -43,3 +43,5 @@ CAMPUS_TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:55439/cam_test npm run 
 ```
 
 The harness refuses databases with existing public tables and creates test Auth/Storage schemas. Never point it at production. GitHub CI provisions its own PostgreSQL service.
+
+Live unauthenticated routing checks: `npm run test:production`.

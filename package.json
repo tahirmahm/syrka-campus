@@ -10,7 +10,8 @@
     "test": "tsx --test tests/*.test.ts",
     "test:browser": "playwright test",
     "format": "prettier --write .",
-    "test:postgres": "tsx --test tests/postgres/*.test.ts"
+    "test:postgres": "tsx --test tests/postgres/*.test.ts",
+    "test:production": "playwright test --config playwright.production.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

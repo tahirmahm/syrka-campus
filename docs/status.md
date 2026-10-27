@@ -1,17 +1,17 @@
 # Verified milestone status — 27 October 2026
 
-This is an initial local pilot implementation. The full master directive and production acceptance criteria are not complete.
+The application is deployed at https://www.syrka.co/cam in backend-setup mode. The hosted institutional pilot and full master directive remain incomplete. See [deployment evidence](deployment-verification.md).
 
 ## Infrastructure
 
-| Item                  | Observed state                                                                                                                                                                                              |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GitHub                | Existing tahirmahm/syrka-campus cloned successfully, main branch. Public for now by explicit owner instruction; attempted privacy change was denied by integration.                                         |
-| Supabase              | Owner selected Syrka organization. Cost quoted $0/month, but create_project rejected: owner has reached the two-active-free-project limit. No Campus project/reference exists. Existing projects preserved. |
-| Vercel                | CLI authenticated by owner. One Hobby project created: syrka-campus (prj_Z0PTqNUtOrCSkmaq7M0ySRbnTB3u), linked to GitHub main. Deployment verification pending.                                             |
-| Required public URL   | https://www.syrka.co/cam is not deployed by this work.                                                                                                                                                      |
-| Existing applications | No repository, database, domain or deployment changed. Existing /workspace/tools returned HTTP 200 during inspection.                                                                                       |
-| Cost                  | No purchases, upgrades, paid APIs or paid infrastructure activated.                                                                                                                                         |
+| Item                  | Observed state                                                                                                                                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub                | Existing tahirmahm/syrka-campus cloned successfully, main branch. Public for now by explicit owner instruction; attempted privacy change was denied by integration.                                                   |
+| Supabase              | Owner selected Syrka organization. Cost quoted $0/month, but create_project rejected: owner has reached the two-active-free-project limit. No Campus project/reference exists. Existing projects preserved.           |
+| Vercel                | CLI authenticated by owner. One Hobby project created: syrka-campus (prj_Z0PTqNUtOrCSkmaq7M0ySRbnTB3u), linked to GitHub main. Git production deployment from main reached READY; live /cam proxy smoke tests passed. |
+| Required public URL   | https://www.syrka.co/cam loads the application in backend-setup mode.                                                                                                                                                 |
+| Existing applications | Only website Campus proxy rules changed (PR #22). Existing /, /workspace and /workspace/tools verified HTTP 200 in Chromium. No existing databases, Workspace source or DNS changed.                                  |
+| Cost                  | No purchases, upgrades, paid APIs or paid infrastructure activated.                                                                                                                                                   |
 
 ## Implemented locally
 
@@ -36,9 +36,9 @@ This is an initial local pilot implementation. The full master directive and pro
 - `npm run test:browser`: 2 passing Chromium tests covering exact basePath redirect behavior, protected route setup behavior, actual wordmark loading and mobile width.
 - Browser verification caught and fixed double-prefix redirects. Next navigation redirects must omit the `/cam` prefix because Next.js adds it.
 - `npm audit --omit=dev`: 0 reported vulnerabilities.
-- Five migrations successfully loaded by SQL integration tests. None applied to hosted Supabase.
+- Seven migrations successfully loaded by SQL integration tests and independent PostgreSQL. None applied to hosted Supabase.
 - Supabase security/performance advisors: not run, because the dedicated project does not exist.
-- PR #1 GitHub CI completed successfully. Current /cam release checks pending.
+- PR #1 GitHub CI completed successfully. PR #2 /cam release checks and Git deployments completed successfully.
 
 These checks do not establish hosted end-to-end behavior or full WCAG conformance.
 
@@ -79,3 +79,11 @@ These checks do not establish hosted end-to-end behavior or full WCAG conformanc
 Owner changed the requested public path to `https://www.syrka.co/cam`. Application base path, asset URLs, private cookie scopes, cache invalidation and browser tests now use `/cam`.
 
 Two new migrations implement assessments and academic records. Fifteen SQL tests pass locally, including assessment secrecy, immutable exam content, expiry behavior, automatic/manual marking, attendance isolation and final-grade publication. Hosted database migrations remain blocked by free project capacity.
+
+## Verified public /cam deployment
+
+Four production Chromium smoke tests pass for public routing, real assets, refresh, mobile width and preserved existing routes. GitHub source and website proxy PRs are merged. The dedicated Vercel project is on Hobby and main is the production branch. No backend variables can be configured until a dedicated Supabase project exists, so sign-in remains disabled. See deployment-verification.md for exact commits and deployment IDs.
+
+## Dedicated backend connection pending
+
+Owner provided project `pftbpimhyophitfuzcxn`. Its Auth API responds successfully; Campus schema is absent. Existing connector credentials lack management permission. Supabase CLI authentication is pending before migrations, advisors, test-account provisioning and production environment activation. The former free-capacity blocker is superseded by access to this newly supplied project.
