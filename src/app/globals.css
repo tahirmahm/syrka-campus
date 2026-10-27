@@ -1785,11 +1785,32 @@ label:has(> input[type="radio"]) {
   line-height: 1.65;
   margin-bottom: 8px;
 }
-.quiet {
-  min-height: 44px;
-}
 .drawer-close {
   width: 44px;
   height: 44px;
   min-height: 44px;
+}
+
+.system-state {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+.system-state > .card {
+  width: 100%;
+  max-width: 480px;
+  padding: clamp(24px, 5vw, 40px);
+}
+.system-state .brand-wordmark {
+  width: 160px;
+  margin-bottom: 28px;
+}
+.system-state h1 {
+  font-size: clamp(24px, 4vw, 30px);
+  line-height: 1.2;
+}
+.system-state .button,
+.system-state button {
+  margin-top: 12px;
 }
