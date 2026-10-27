@@ -8,7 +8,7 @@ This is an initial local pilot implementation. The full master directive and pro
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GitHub                | Existing tahirmahm/syrka-campus cloned successfully, main branch. Public for now by explicit owner instruction; attempted privacy change was denied by integration.                                         |
 | Supabase              | Owner selected Syrka organization. Cost quoted $0/month, but create_project rejected: owner has reached the two-active-free-project limit. No Campus project/reference exists. Existing projects preserved. |
-| Vercel                | Projects and website ownership inspected read-only. No Campus project created, no deployment performed, no automatic deployments verified.                                                                  |
+| Vercel                | Campus creation rejected with HTTP 403 (no project-creation permission). CLI fallback lacks authentication. No Campus project/deployment exists; Git automatic deployment unverified.                       |
 | Required public URL   | https://www.syrka.co/campus is not deployed by this work.                                                                                                                                                   |
 | Existing applications | No repository, database, domain or deployment changed. Existing /workspace/tools returned HTTP 200 during inspection.                                                                                       |
 | Cost                  | No purchases, upgrades, paid APIs or paid infrastructure activated.                                                                                                                                         |
@@ -66,6 +66,8 @@ These checks do not establish hosted end-to-end behavior or full WCAG conformanc
 - Re-ran SQL authorization tests: 12 passing; lint and production build passed.
 - Re-ran Chromium setup/mobile tests: 2 passing.
 - Added PostgreSQL 17 independent-session tests: 5 passing (parent plus 4 races), covering last-seat capacity, duplicate enrollment, competing sections and waitlist placement. Tests observe actual server lock waits before releasing the first transaction.
-- CI now includes a disposable PostgreSQL service and the race suite. Remote CI results remain pending.
+- CI now includes a disposable PostgreSQL service and the race suite. PR #1 remote lint, SQL, PostgreSQL and build steps passed; browser installation/checks were still running at this documentation update.
 - Required public `/campus` returned HTTP 404; existing `/workspace/tools` returned HTTP 200.
 - No hosted migrations or security advisors run: dedicated backend creation is blocked by Supabase free project limit.
+
+- Production website inspection identifies `tahirmahm/syrka.v12` main commit `476af48f52b4ae0f80dfad9ccf96d1ef1c3b75d3`, deployed via Git to `syrka12`. No website changes applied; there is no verified Campus origin for a proxy rule.
