@@ -44,6 +44,13 @@ function literals(source: string, filename: string) {
   visit(file);
   return found;
 }
+function decodeUnicodeEscapes(value: string) {
+  return value.replace(
+    /\\u([\da-fA-F]{4})|\\U([\da-fA-F]{8})/g,
+    (_, short: string, long: string) =>
+      String.fromCodePoint(parseInt(short ?? long, 16)),
+  );
+}
 function files(root: string): string[] {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) =>
     entry.isDirectory()
@@ -59,13 +66,7 @@ test("Application-owned UI and demo seed strings contain no emoji icons", () => 
     const source = readFileSync(file, "utf8");
     const values = /\.tsx?$/.test(file)
       ? literals(source, file)
-      : [
-          source.replace(
-            /\\u([\da-f]{4})|\\U([\da-f]{8})/gi,
-            (_, short: string, long: string) =>
-              String.fromCodePoint(parseInt(short ?? long, 16)),
-          ),
-        ];
+      : [decodeUnicodeEscapes(source)];
     if (values.some(hasEmoji)) failures.push(file);
   }
   assert.deepEqual(
@@ -77,6 +78,8 @@ test("Application-owned UI and demo seed strings contain no emoji icons", () => 
 test("The guard catches escaped strings, JSX entities, flags and keycaps without banning academic Unicode", () => {
   const emoji = String.fromCodePoint(0x1f600);
   assert.ok(hasEmoji(emoji));
+  assert.ok(hasEmoji(decodeUnicodeEscapes("\\U0001f600")));
+  assert.ok(hasEmoji(decodeUnicodeEscapes("\\uD83D\\uDE00")));
   assert.ok(hasEmoji(String.fromCodePoint(0x1f1f3, 0x1f1f1)));
   assert.ok(hasEmoji("1\uFE0F\u20E3"));
   const encoded = literals(
