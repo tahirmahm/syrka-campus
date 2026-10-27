@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/submit-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { session } from "@/lib/session";
@@ -45,12 +46,12 @@ export default async function AttemptPage({
   return (
     <>
       <PageTop
-        label="ASSESSMENT / ATTEMPT"
+        label="Assessment attempt"
         title={a.title}
         description={`Deadline: ${new Date(a.expires_at).toLocaleString("en-GB", { timeZone: "UTC" })} UTC`}
       />
       <Link href={`/assessments/${a.assessment_id}?institution=${tenant}`}>
-        ← Assessment
+        Assessment
       </Link>
       {notice && (
         <p className="notice" role="status">
@@ -121,14 +122,15 @@ export default async function AttemptPage({
         {!a.staff && !a.finished_at && (
           <div className="toolbar">
             {editable && (
-              <button name="finalize" value="false">
+              <SubmitButton name="finalize" value="false">
                 Save responses
-              </button>
+              </SubmitButton>
             )}
-            <button name="finalize" value="true">
-              {a.expired ? "Finalize saved responses" : "Submit final attempt"}{" "}
-              →
-            </button>
+            <SubmitButton name="finalize" value="true">
+              {a.expired
+                ? "Finalize saved responses"
+                : "Submit final attempt"}{" "}
+            </SubmitButton>
           </div>
         )}
       </form>
@@ -164,7 +166,7 @@ export default async function AttemptPage({
                     defaultValue={q.feedback ?? ""}
                   />
                 </label>
-                <button>Save mark →</button>
+                <SubmitButton>Save mark </SubmitButton>
               </form>
             </details>
           ))}

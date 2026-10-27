@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/submit-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { session } from "@/lib/session";
@@ -58,12 +59,12 @@ export default async function Assessment({
   return (
     <>
       <PageTop
-        label={a.kind.toUpperCase()}
+        label={a.kind === "exam" ? "Examination" : "Quiz"}
         title={a.title}
         description={`${a.time_limit_minutes ?? "No"} minute limit · ${a.attempt_limit} attempt(s)`}
       />
       <Link href={`/courses/${a.offering_id}?institution=${tenant}`}>
-        ← Course
+        Course
       </Link>
       {notice && (
         <p className="notice" role="status">
@@ -87,7 +88,7 @@ export default async function Assessment({
           <form action={startAssessment}>
             <Hidden tenant={tenant} />
             <input type="hidden" name="assessment" value={id} />
-            <button>Start or resume attempt →</button>
+            <SubmitButton>Start or resume attempt </SubmitButton>
           </form>
         )}
       </section>
@@ -110,7 +111,7 @@ export default async function Assessment({
                 UTC · {attempt.finished_at ? "Submitted" : "Started"}
               </span>
               <Link href={`/attempts/${attempt.id}?institution=${tenant}`}>
-                {staff ? "Review" : "Open"} ↗
+                {staff ? "Review" : "Open"}
               </Link>
             </div>
           ),
@@ -140,7 +141,7 @@ export default async function Assessment({
                 />{" "}
                 Release marked scores and feedback
               </label>
-              <button>Save publication →</button>
+              <SubmitButton>Save publication </SubmitButton>
             </form>
           </section>
           <section className="card">
@@ -201,7 +202,7 @@ export default async function Assessment({
                   manually)
                   <input name="expected" maxLength={2000} />
                 </label>
-                <button>Add question →</button>
+                <SubmitButton>Add question </SubmitButton>
               </form>
             </details>
           </section>

@@ -12,7 +12,7 @@ export default function ErrorPage({
         Your institution’s data remains protected. Please retry or contact your
         administrator.
       </p>
-      <button onClick={reset}>Try again →</button>
+      <button onClick={reset}>Try again </button>
     </main>
   );
 }

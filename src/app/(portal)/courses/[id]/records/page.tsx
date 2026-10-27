@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/submit-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { session } from "@/lib/session";
@@ -78,15 +79,15 @@ export default async function Records({
   return (
     <>
       <PageTop
-        label={`${c.code} / ACADEMIC RECORDS`}
-        title="Progress, in perspective."
+        label={`${c.code} · Course records`}
+        title="Academic records"
         description={c.title}
       />
-      <Link href={`/courses/${id}?institution=${tenant}`}>← Course</Link>
+      <Link href={`/courses/${id}?institution=${tenant}`}> Course</Link>
       {staff && (
         <p>
           <a href={`/cam/courses/${id}/export?institution=${tenant}`}>
-            Export authorized gradebook CSV ↓
+            Export authorized gradebook CSV
           </a>
         </p>
       )}
@@ -297,7 +298,7 @@ export default async function Records({
                     </label>
                   </>
                 )}
-                <button>Save →</button>
+                <SubmitButton>Save </SubmitButton>
               </form>
             </details>
           ))}
