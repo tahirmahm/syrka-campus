@@ -117,17 +117,3 @@ export function DateChip({ value }: { value: string }) {
     </div>
   );
 }
-
-// Transitional export for the independently reviewable shell milestone.
-// Institution switching now lives in the shared shell.
-export function TenantPicker(props: {
-  memberships: {
-    institution_id: string;
-    role: string;
-    institutions: unknown;
-  }[];
-  current?: string;
-}) {
-  void props;
-  return null;
-}

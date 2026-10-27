@@ -1,9 +1,12 @@
+import { SubmitButton } from "@/components/submit-button";
+import { Icon } from "@/components/icon";
+import { CourseTabs } from "@/components/course-tabs";
 import { Publication } from "@/components/publication";
 import Link from "next/link";
 import { createAssessment } from "@/lib/assessments";
 import { notFound } from "next/navigation";
 import { session } from "@/lib/session";
-import { PageTop, Hidden, Empty } from "@/components/academic";
+import { PageTop, Hidden, Empty, Status } from "@/components/academic";
 import { createDelivery, submit, grade, uploadMaterial } from "@/lib/actions";
 export default async function Course({
   params,
@@ -43,7 +46,7 @@ export default async function Course({
         .select("*")
         .eq("institution_id", tenant)
         .eq("offering_id", id)
-        .order("created_at"),
+        .order(t === "modules" ? "position" : "created_at"),
     ),
   );
   if ([modules, materials, assignments, announcements].some((r) => r.error))
@@ -72,63 +75,88 @@ export default async function Course({
   return (
     <>
       <PageTop
-        label={`${c.code} / SECTION ${offering.section}`}
+        label={`${c.code} · Section ${offering.section}`}
         title={c.title}
         description={`${c.credits} credits · ${(offering.academic_terms as unknown as { name: string }).name}`}
       />
-      <p>
-        <Link href={`/courses/${id}/records?institution=${tenant}`}>
-          Course results, attendance & calendar ↗
-        </Link>
-      </p>
+      <CourseTabs tenant={tenant} offering={id} teaches={teaches} />
       {notice && (
         <p className="notice" role="status">
           {notice}
         </p>
       )}
-      <section className="card">
-        <p className="eyebrow">OVERVIEW / SYLLABUS</p>
+      <section id="overview" className="card course-section">
+        <h2>Course overview</h2>
         <p>{c.description}</p>
         <p style={{ whiteSpace: "pre-wrap" }}>
           {offering.syllabus || "The syllabus has not been added yet."}
         </p>
       </section>
-      <section>
-        <h2>Your learning path</h2>
-        {modules.data?.map((m) => (
-          <article className="card" key={m.id}>
-            <p className="eyebrow">{m.published ? "PUBLISHED" : "DRAFT"}</p>
-            <h3>{m.title}</h3>
-            <p>{m.description}</p>
-            {teaches && (
-              <Publication
-                tenant={tenant}
-                offering={id}
-                kind="modules"
-                id={m.id}
-                published={m.published}
-              />
-            )}
-          </article>
-        ))}
-        {!modules.data?.length && <Empty>No modules published yet.</Empty>}
+      <section id="modules" className="course-section">
+        <div className="section-heading">
+          <h2>Weekly learning path</h2>
+          <span className="small">{modules.data?.length ?? 0} modules</span>
+        </div>
+        <div className="module-list">
+          {modules.data?.map((m, index) => (
+            <article className="module-card" key={m.id}>
+              <span className="module-index">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3>{m.title}</h3>
+                <p>{m.description}</p>
+                {teaches && (
+                  <div className="row">
+                    <Status published={m.published} />
+                    <Publication
+                      tenant={tenant}
+                      offering={id}
+                      kind="modules"
+                      id={m.id}
+                      published={m.published}
+                    />
+                  </div>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+        {!modules.data?.length && (
+          <Empty>No modules have been published for this course yet.</Empty>
+        )}
       </section>
       <section className="grid">
-        <article className="card">
-          <h3>Readings & resources</h3>
+        <article id="readings" className="card course-section">
+          <h2>Readings & resources</h2>
           {materials.data?.map((m) => (
-            <div className="row" key={m.id}>
+            <div className="resource-row" key={m.id}>
+              <span className="resource-icon">
+                <Icon name={m.external_url ? "external" : "file"} size={18} />
+              </span>
               {m.external_url ? (
                 <a
                   href={m.external_url}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  {m.title} ↗
+                  <span>
+                    {m.title}
+                    <span className="resource-type">External resource</span>
+                  </span>
+                  <Icon name="external" size={15} />
                 </a>
               ) : (
                 <a href={`/cam/files/${m.id}?institution=${tenant}`}>
-                  {m.title} ↓
+                  <span>
+                    {m.title}
+                    <span className="resource-type">
+                      {m.object_path?.split(".").pop()?.toUpperCase() ??
+                        "Document"}{" "}
+                      · Secure download
+                    </span>
+                  </span>
+                  <Icon name="download" size={16} />
                 </a>
               )}
               {teaches && (
@@ -142,13 +170,15 @@ export default async function Course({
               )}
             </div>
           ))}
-          {!materials.data?.length && <p>No materials yet.</p>}
+          {!materials.data?.length && (
+            <Empty>No readings have been published for this course yet.</Empty>
+          )}
         </article>
-        <article className="card">
-          <h3>Course announcements</h3>
+        <article id="announcements" className="card course-section">
+          <h2>Announcements</h2>
           {announcements.data?.map((a) => (
-            <div key={a.id}>
-              <strong>{a.title}</strong>
+            <div className="announcement" key={a.id}>
+              <h3>{a.title}</h3>
               <p>{a.body}</p>
               {teaches && (
                 <Publication
@@ -161,20 +191,30 @@ export default async function Course({
               )}
             </div>
           ))}
-          {!announcements.data?.length && <p>No announcements yet.</p>}
+          {!announcements.data?.length && (
+            <Empty>No course announcements yet.</Empty>
+          )}
         </article>
       </section>
-      <section>
-        <h2>Assignments</h2>
+      <section id="assignments" className="course-section">
+        <div className="section-heading">
+          <h2>Assignments</h2>
+          <span className="small">Instructions, submission & feedback</span>
+        </div>
         {assignments.data?.map((a) => {
           const mine = submissions?.find(
             (s) => s.assignment_id === a.id && s.user_id === user.id,
           );
           return (
-            <article className="card" key={a.id}>
-              <p className="eyebrow">
-                {a.published ? "PUBLISHED" : "DRAFT"} / {a.max_points} POINTS
-              </p>
+            <article
+              className="card assignment-card"
+              id={`assignment-${a.id}`}
+              key={a.id}
+            >
+              <div className="card-top">
+                <Status published={a.published} />
+                <span className="small">{a.max_points} points</span>
+              </div>
               <h3>{a.title}</h3>
               {teaches && (
                 <Publication
@@ -209,12 +249,16 @@ export default async function Course({
                     Status: {mine?.status ?? "Not started"} / Final submissions:{" "}
                     {mine?.revision ?? 0}
                   </p>
-                  <button name="finalize" value="false">
+                  <SubmitButton
+                    name="finalize"
+                    value="false"
+                    className="secondary"
+                  >
                     Save draft
-                  </button>{" "}
-                  <button name="finalize" value="true">
-                    Submit final →
-                  </button>
+                  </SubmitButton>{" "}
+                  <SubmitButton name="finalize" value="true">
+                    Submit final
+                  </SubmitButton>
                 </form>
               )}
               {teaches &&
@@ -267,7 +311,7 @@ export default async function Course({
                             />{" "}
                             Publish to student
                           </label>
-                          <button>Save grade →</button>
+                          <SubmitButton>Save grade </SubmitButton>
                         </form>
                       )}
                     </details>
@@ -277,7 +321,7 @@ export default async function Course({
         })}
         {!assignments.data?.length && <Empty>No assignments yet.</Empty>}
       </section>
-      <section className="card">
+      <section id="assessments" className="card course-section">
         <h2>Quizzes & examinations</h2>
         {assessments?.map((a) => (
           <div className="row" key={a.id}>
@@ -285,15 +329,21 @@ export default async function Course({
               {a.kind.toUpperCase()} · {a.title}
             </span>
             <Link href={`/assessments/${a.id}?institution=${tenant}`}>
-              Open assessment ↗
+              Open assessment
+              <Icon name="arrow" size={15} />
             </Link>
           </div>
         ))}
         {!assessments?.length && <Empty>No assessments published yet.</Empty>}
       </section>
       {teaches && (
-        <section>
-          <h2>Teaching desk</h2>
+        <section id="teaching" className="course-section">
+          <div className="section-heading">
+            <h2>Teaching desk</h2>
+            <span className="small">
+              Assigned faculty & institutional administrators
+            </span>
+          </div>
           <details>
             <summary>Create quiz or examination</summary>
             <form action={createAssessment}>
@@ -346,7 +396,7 @@ export default async function Course({
               <p className="small">
                 Created as a draft. Add questions before publishing.
               </p>
-              <button>Create assessment →</button>
+              <SubmitButton>Create assessment </SubmitButton>
             </form>
           </details>
           <details>
@@ -369,7 +419,7 @@ export default async function Course({
               <label>
                 <input type="checkbox" name="published" /> Publish immediately
               </label>
-              <button>Upload →</button>
+              <SubmitButton>Upload </SubmitButton>
             </form>
           </details>
           {(
@@ -431,7 +481,7 @@ export default async function Course({
                 <label>
                   <input type="checkbox" name="published" /> Publish immediately
                 </label>
-                <button>Create →</button>
+                <SubmitButton>Create </SubmitButton>
               </form>
             </details>
           ))}
