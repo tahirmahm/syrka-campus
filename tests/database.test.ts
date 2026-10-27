@@ -327,6 +327,387 @@ test("Two institutions: pilot journey and authorization boundaries", async (t) =
     },
   );
   await t.test(
+    "Timed assessments protect keys, freeze questions, mark answers and gate results",
+    async () => {
+      const exam = "80000000-0000-4000-8000-000000000001";
+      await as(ids.faculty);
+      await db.query(
+        "insert into assessments(id,institution_id,offering_id,title,kind,opens_at,closes_at,time_limit_minutes,attempt_limit,published,randomized) values($1,$2,$3,'Reading quiz','quiz',now()-interval '1 hour',now()+interval '1 hour',30,1,true,true)",
+        [exam, ids.a, ids.offering],
+      );
+      async function question(content: unknown) {
+        return (
+          await db.query<{ author_question: string }>(
+            "select author_question($1,$2,$3::jsonb)",
+            [ids.a, exam, JSON.stringify(content)],
+          )
+        ).rows[0].author_question;
+      }
+      const choice = await question({
+        kind: "single",
+        prompt: "Choose A",
+        points: 10,
+        options: [
+          { body: "A", correct: true },
+          { body: "B", correct: false },
+        ],
+      });
+      const multiple = await question({
+        kind: "multiple",
+        prompt: "Choose A and C",
+        points: 10,
+        options: [
+          { body: "A", correct: true },
+          { body: "B", correct: false },
+          { body: "C", correct: true },
+        ],
+      });
+      const short = await question({
+        kind: "short",
+        prompt: "Name the campus",
+        points: 10,
+        expected: "Syrka",
+      });
+      const essay = await question({
+        kind: "essay",
+        prompt: "Explain your reasoning",
+        points: 20,
+      });
+      await assert.rejects(
+        question({
+          kind: "single",
+          prompt: "Invalid",
+          points: 10,
+          options: [
+            { body: "A", correct: false },
+            { body: "B", correct: false },
+          ],
+        }),
+        /Invalid correct/,
+      );
+      const keyRows = (
+        await db.query<{ question_id: string; option_id: string }>(
+          "select question_id,option_id from answer_keys where option_id is not null",
+        )
+      ).rows;
+      await as(ids.student);
+      for (const table of [
+        "answer_keys",
+        "questions",
+        "answer_options",
+        "assessment_attempts",
+        "assessment_responses",
+      ])
+        assert.equal(
+          (await db.query(`select * from ${table}`)).rows.length,
+          0,
+          table,
+        );
+      await assert.rejects(
+        db.query("select * from attempt_questions"),
+        /permission denied/,
+      );
+      const attempt = (
+        await db.query<{ start_assessment: string }>(
+          "select start_assessment($1,$2)",
+          [ids.a, exam],
+        )
+      ).rows[0].start_assessment;
+      assert.equal(
+        (
+          await db.query<{ start_assessment: string }>(
+            "select start_assessment($1,$2)",
+            [ids.a, exam],
+          )
+        ).rows[0].start_assessment,
+        attempt,
+        "Resume same live attempt",
+      );
+      async function read() {
+        return (
+          await db.query<{
+            read_attempt: {
+              questions: {
+                id: string;
+                prompt: string;
+                points: number | null;
+                feedback: string | null;
+              }[];
+              results_published: boolean;
+            };
+          }>("select read_attempt($1,$2)", [ids.a, attempt])
+        ).rows[0].read_attempt;
+      }
+      assert.equal((await read()).questions.length, 4);
+      assert.ok(!JSON.stringify(await read()).includes("marking_key"));
+      await as(ids.faculty);
+      await db.query(
+        "update questions set prompt='Changed after start',points=99 where id=$1",
+        [choice],
+      );
+      await as(ids.student);
+      assert.equal(
+        (await read()).questions.find((q) => q.id === choice)?.prompt,
+        "Choose A",
+      );
+      await assert.rejects(
+        db.query("select save_attempt($1,$2,$3::jsonb,false)", [
+          ids.a,
+          attempt,
+          JSON.stringify({ [ids.assignment]: "Foreign question" }),
+        ]),
+        /not part of attempt/,
+      );
+      const answers = {
+        [choice]: keyRows
+          .filter((k) => k.question_id === choice)
+          .map((k) => k.option_id),
+        [multiple]: keyRows
+          .filter((k) => k.question_id === multiple)
+          .map((k) => k.option_id),
+        [short]: "  SYRKA ",
+        [essay]: "A considered response",
+      };
+      await db.query("select save_attempt($1,$2,$3::jsonb,true)", [
+        ids.a,
+        attempt,
+        JSON.stringify(answers),
+      ]);
+      assert.ok(
+        (await read()).questions.every((q) => q.points === null),
+        "Unpublished marks must be absent from RPC",
+      );
+      await assert.rejects(
+        db.query("select save_attempt($1,$2,'{}',false)", [ids.a, attempt]),
+        /already submitted/,
+      );
+      await assert.rejects(
+        db.query("select start_assessment($1,$2)", [ids.a, exam]),
+        /Attempt limit/,
+      );
+      await as(ids.other);
+      await assert.rejects(read(), /access denied/);
+      await assert.rejects(
+        db.query("select mark_response($1,$2,$3,15,'Bad')", [
+          ids.a,
+          attempt,
+          essay,
+        ]),
+        /access denied/,
+      );
+      await as(ids.second);
+      await assert.rejects(read(), /access denied/);
+      await as(ids.faculty);
+      assert.equal(
+        (await read()).questions.find((q) => q.id === choice)?.points,
+        10,
+      );
+      assert.equal(
+        (await read()).questions.find((q) => q.id === multiple)?.points,
+        10,
+      );
+      assert.equal(
+        (await read()).questions.find((q) => q.id === short)?.points,
+        10,
+      );
+      assert.equal(
+        (await read()).questions.find((q) => q.id === essay)?.points,
+        null,
+      );
+      await assert.rejects(
+        db.query("select mark_response($1,$2,$3,21,'Too high')", [
+          ids.a,
+          attempt,
+          essay,
+        ]),
+        /Invalid grade/,
+      );
+      await db.query("select mark_response($1,$2,$3,17,'Well reasoned')", [
+        ids.a,
+        attempt,
+        essay,
+      ]);
+      await db.query(
+        "update assessments set results_published=true where id=$1",
+        [exam],
+      );
+      await as(ids.student);
+      assert.equal(
+        (await read()).questions.find((q) => q.id === essay)?.points,
+        17,
+      );
+      assert.equal(
+        (await read()).questions.find((q) => q.id === essay)?.feedback,
+        "Well reasoned",
+      );
+      assert.equal(
+        (await db.query("select * from assessment_responses")).rows.length,
+        0,
+        "Direct table queries must not bypass publication RPC",
+      );
+    },
+  );
+  await t.test(
+    "Expired assessment finalizes only responses saved before expiry",
+    async () => {
+      const exam = "80000000-0000-4000-8000-000000000002";
+      await as(ids.faculty);
+      await db.query(
+        "insert into assessments(id,institution_id,offering_id,title,kind,opens_at,closes_at,published) values($1,$2,$3,'Expiry','exam',now()-interval '1 hour',now()+interval '1 hour',true)",
+        [exam, ids.a, ids.offering],
+      );
+      const question = (
+        await db.query<{ author_question: string }>(
+          "select author_question($1,$2,$3::jsonb)",
+          [
+            ids.a,
+            exam,
+            JSON.stringify({
+              kind: "short",
+              prompt: "Name",
+              points: 5,
+              expected: "Syrka",
+            }),
+          ],
+        )
+      ).rows[0].author_question;
+      await as(ids.student);
+      const attempt = (
+        await db.query<{ start_assessment: string }>(
+          "select start_assessment($1,$2)",
+          [ids.a, exam],
+        )
+      ).rows[0].start_assessment;
+      await db.query("select save_attempt($1,$2,$3::jsonb,false)", [
+        ids.a,
+        attempt,
+        JSON.stringify({ [question]: "Wrong" }),
+      ]);
+      await db.exec("reset role");
+      await db.query(
+        "update assessment_attempts set expires_at=now()-interval '1 second' where id=$1",
+        [attempt],
+      );
+      await as(ids.student);
+      await assert.rejects(
+        db.query("select save_attempt($1,$2,$3::jsonb,false)", [
+          ids.a,
+          attempt,
+          JSON.stringify({ [question]: "Syrka" }),
+        ]),
+        /expired/,
+      );
+      await db.query("select save_attempt($1,$2,$3::jsonb,true)", [
+        ids.a,
+        attempt,
+        JSON.stringify({ [question]: "Syrka" }),
+      ]);
+      await as(ids.faculty);
+      const result = (
+        await db.query<{
+          read_attempt: { questions: { points: number; response: string }[] };
+        }>("select read_attempt($1,$2)", [ids.a, attempt])
+      ).rows[0].read_attempt;
+      assert.equal(result.questions[0].points, 0);
+      assert.equal(result.questions[0].response, "Wrong");
+    },
+  );
+  await t.test(
+    "Attendance, calendar and final gradebook retain tenant and publication boundaries",
+    async () => {
+      await as(ids.faculty);
+      await db.query(
+        "insert into attendance(institution_id,offering_id,user_id,session_date,status) values($1,$2,$3,'2026-10-27','present')",
+        [ids.a, ids.offering, ids.student],
+      );
+      await db.query(
+        "insert into calendar_events(institution_id,offering_id,title,starts_at,ends_at) values($1,$2,'Seminar',now(),now()+interval '1 hour')",
+        [ids.a, ids.offering],
+      );
+      const category = (
+        await db.query<{ id: string }>(
+          "insert into grade_categories(institution_id,offering_id,name,weight) values($1,$2,'Coursework',1) returning id",
+          [ids.a, ids.offering],
+        )
+      ).rows[0].id;
+      await db.query(
+        "insert into grade_items(institution_id,category_id,assignment_id,title) values($1,$2,$3,'Reflection')",
+        [ids.a, category, ids.assignment],
+      );
+      assert.equal(
+        Number(
+          (
+            await db.query<{ calculate_course_grade: string }>(
+              "select calculate_course_grade($1,$2,$3,'Good progress',false)",
+              [ids.a, ids.offering, ids.student],
+            )
+          ).rows[0].calculate_course_grade,
+        ),
+        86,
+      );
+      await as(ids.student);
+      assert.equal(
+        (await db.query("select * from course_grades")).rows.length,
+        0,
+      );
+      assert.equal((await db.query("select * from attendance")).rows.length, 1);
+      assert.equal(
+        (await db.query("select * from calendar_events")).rows.length,
+        1,
+      );
+      await assert.rejects(
+        db.query("select calculate_course_grade($1,$2,$3,'Intrusion',true)", [
+          ids.a,
+          ids.offering,
+          ids.student,
+        ]),
+        /access denied/,
+      );
+      await as(ids.faculty);
+      await db.query(
+        "select calculate_course_grade($1,$2,$3,'Good progress',true)",
+        [ids.a, ids.offering, ids.student],
+      );
+      await as(ids.student);
+      assert.equal(
+        Number(
+          (
+            await db.query<{ percentage: string }>(
+              "select percentage from course_grades",
+            )
+          ).rows[0].percentage,
+        ),
+        86,
+      );
+      await as(ids.second);
+      assert.equal(
+        (await db.query("select * from course_grades")).rows.length,
+        0,
+      );
+      assert.equal((await db.query("select * from attendance")).rows.length, 0);
+      await as(ids.other);
+      for (const table of [
+        "course_grades",
+        "attendance",
+        "calendar_events",
+        "grade_categories",
+        "grade_items",
+      ])
+        assert.equal(
+          (await db.query(`select * from ${table}`)).rows.length,
+          0,
+          table,
+        );
+      await assert.rejects(
+        db.query(
+          "insert into attendance(institution_id,offering_id,user_id,session_date,status) values($1,$2,$3,'2026-10-28','absent')",
+          [ids.a, ids.offering, ids.student],
+        ),
+        /row-level security/,
+      );
+    },
+  );
+  await t.test(
     "Expired registration and assignment deadlines enforced",
     async () => {
       await db.exec("reset role");

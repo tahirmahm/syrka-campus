@@ -1,3 +1,6 @@
+import { Publication } from "@/components/publication";
+import Link from "next/link";
+import { createAssessment } from "@/lib/assessments";
 import { notFound } from "next/navigation";
 import { session } from "@/lib/session";
 import { PageTop, Hidden, Empty } from "@/components/academic";
@@ -53,6 +56,13 @@ export default async function Course({
     .eq("institution_id", tenant)
     .in("assignment_id", assignments.data?.map((a) => a.id) ?? []);
   if (error) throw new Error("Submissions unavailable");
+  const { data: assessments, error: assessmentError } = await db
+    .from("assessments")
+    .select("id,title,kind,opens_at,closes_at")
+    .eq("institution_id", tenant)
+    .eq("offering_id", id)
+    .order("opens_at");
+  if (assessmentError) throw new Error("Assessments unavailable");
   const c = offering.courses as unknown as {
     code: string;
     title: string;
@@ -66,6 +76,11 @@ export default async function Course({
         title={c.title}
         description={`${c.credits} credits · ${(offering.academic_terms as unknown as { name: string }).name}`}
       />
+      <p>
+        <Link href={`/courses/${id}/records?institution=${tenant}`}>
+          Course results, attendance & calendar ↗
+        </Link>
+      </p>
       {notice && (
         <p className="notice" role="status">
           {notice}
@@ -85,6 +100,15 @@ export default async function Course({
             <p className="eyebrow">{m.published ? "PUBLISHED" : "DRAFT"}</p>
             <h3>{m.title}</h3>
             <p>{m.description}</p>
+            {teaches && (
+              <Publication
+                tenant={tenant}
+                offering={id}
+                kind="modules"
+                id={m.id}
+                published={m.published}
+              />
+            )}
           </article>
         ))}
         {!modules.data?.length && <Empty>No modules published yet.</Empty>}
@@ -103,9 +127,18 @@ export default async function Course({
                   {m.title} ↗
                 </a>
               ) : (
-                <a href={`/campus/files/${m.id}?institution=${tenant}`}>
+                <a href={`/cam/files/${m.id}?institution=${tenant}`}>
                   {m.title} ↓
                 </a>
+              )}
+              {teaches && (
+                <Publication
+                  tenant={tenant}
+                  offering={id}
+                  kind="materials"
+                  id={m.id}
+                  published={m.published}
+                />
               )}
             </div>
           ))}
@@ -117,6 +150,15 @@ export default async function Course({
             <div key={a.id}>
               <strong>{a.title}</strong>
               <p>{a.body}</p>
+              {teaches && (
+                <Publication
+                  tenant={tenant}
+                  offering={id}
+                  kind="announcements"
+                  id={a.id}
+                  published={a.published}
+                />
+              )}
             </div>
           ))}
           {!announcements.data?.length && <p>No announcements yet.</p>}
@@ -134,6 +176,15 @@ export default async function Course({
                 {a.published ? "PUBLISHED" : "DRAFT"} / {a.max_points} POINTS
               </p>
               <h3>{a.title}</h3>
+              {teaches && (
+                <Publication
+                  tenant={tenant}
+                  offering={id}
+                  kind="assignments"
+                  id={a.id}
+                  published={a.published}
+                />
+              )}
               <p style={{ whiteSpace: "pre-wrap" }}>{a.instructions}</p>
               <p className="small">
                 Due{" "}
@@ -226,9 +277,78 @@ export default async function Course({
         })}
         {!assignments.data?.length && <Empty>No assignments yet.</Empty>}
       </section>
+      <section className="card">
+        <h2>Quizzes & examinations</h2>
+        {assessments?.map((a) => (
+          <div className="row" key={a.id}>
+            <span>
+              {a.kind.toUpperCase()} · {a.title}
+            </span>
+            <Link href={`/assessments/${a.id}?institution=${tenant}`}>
+              Open assessment ↗
+            </Link>
+          </div>
+        ))}
+        {!assessments?.length && <Empty>No assessments published yet.</Empty>}
+      </section>
       {teaches && (
         <section>
           <h2>Teaching desk</h2>
+          <details>
+            <summary>Create quiz or examination</summary>
+            <form action={createAssessment}>
+              <Hidden tenant={tenant} offering={id} />
+              <label>
+                Title
+                <input name="title" required maxLength={300} />
+              </label>
+              <label>
+                Assessment type
+                <select name="kind">
+                  <option value="quiz">Quiz</option>
+                  <option value="exam">Examination</option>
+                </select>
+              </label>
+              <label>
+                Opens (UTC)
+                <input name="opens_at" type="datetime-local" required />
+              </label>
+              <label>
+                Closes (UTC)
+                <input name="closes_at" type="datetime-local" required />
+              </label>
+              <label>
+                Time limit in minutes
+                <input
+                  name="minutes"
+                  type="number"
+                  min="1"
+                  max="1440"
+                  defaultValue="60"
+                  required
+                />
+              </label>
+              <label>
+                Attempt limit
+                <input
+                  name="attempts"
+                  type="number"
+                  min="1"
+                  max="20"
+                  defaultValue="1"
+                  required
+                />
+              </label>
+              <label>
+                <input name="randomized" type="checkbox" /> Randomize question
+                order
+              </label>
+              <p className="small">
+                Created as a draft. Add questions before publishing.
+              </p>
+              <button>Create assessment →</button>
+            </form>
+          </details>
           <details>
             <summary>Upload syllabus or course material</summary>
             <form action={uploadMaterial}>

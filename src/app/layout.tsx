@@ -3,7 +3,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Syrka Campus",
   description: "A considered space for academic life.",
-  icons: { icon: "/campus/brand/symbol.jpg" },
+  icons: { icon: "/cam/brand/symbol.jpg" },
 };
 export default function RootLayout({
   children,

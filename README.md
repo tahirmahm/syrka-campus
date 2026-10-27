@@ -1,6 +1,6 @@
 # Syrka Campus
 
-A multi-tenant academic platform. This is an initial pilot implementation, not the complete Moodle/Canvas-scale product in the master directive.
+A multi-tenant academic platform. Pilot development includes registration, course delivery, text assignments, timed assessments, marking, attendance, calendars and weighted course results. Hosted institutional acceptance remains pending.
 
 **Pilot milestone; backend provisioning blocked.** Source is in [tahirmahm/syrka-campus](https://github.com/tahirmahm/syrka-campus), public for now at the owner’s request. Supabase rejected dedicated project creation because the account already has two active free projects. See [status](docs/status.md) for current deployment evidence, scope and gaps.
 
@@ -14,7 +14,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000/campus/login. Without backend configuration sign-in is disabled and protected routes redirect to setup; no invented academic data is displayed. Configure only the dedicated Campus project's URL and publishable key. Auth cookies have a separate name and `/campus` scope.
+Open http://localhost:3000/cam/login. Without backend configuration sign-in is disabled and protected routes redirect to setup; no invented academic data is displayed. Configure only the dedicated Campus project's URL and publishable key. Auth cookies have a separate name and `/cam` scope.
 
 ```sh
 npm test
@@ -39,7 +39,7 @@ No paid APIs are used. Existing Syrka applications and production infrastructure
 Run independent-session tests only against an **empty disposable** PostgreSQL 17 database:
 
 ```sh
-CAMPUS_TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:55439/campus_test npm run test:postgres
+CAMPUS_TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:55439/cam_test npm run test:postgres
 ```
 
 The harness refuses databases with existing public tables and creates test Auth/Storage schemas. Never point it at production. GitHub CI provisions its own PostgreSQL service.

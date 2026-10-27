@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
-  basePath: "/campus",
+  basePath: "/cam",
   poweredByHeader: false,
   experimental: { serverActions: { bodySizeLimit: "11mb" } },
   async headers() {

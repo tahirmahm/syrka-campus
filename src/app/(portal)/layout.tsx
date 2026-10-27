@@ -15,7 +15,7 @@ export default async function Portal({
       <aside>
         <Link href="/dashboard" className="brand">
           <Image
-            src="/campus/brand/symbol.jpg"
+            src="/cam/brand/symbol.jpg"
             width={48}
             height={48}
             alt="Syrka"
