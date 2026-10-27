@@ -11,7 +11,7 @@
 
 Check installed CLI `--help`, link only the new project, and apply versioned migrations. Verify remote migration history. Never target `ejzymrrfyezvdiocwsew` or `zguejzlseldovdssiumn`.
 
-Use email/password Auth. For the institutional pilot disable public signup and provision users through the dashboard's normal password setup flow. Canonical site URL: `https://www.syrka.co/cam`. Self-service invitations and recovery are not yet implemented.
+Use email/password Auth. For the institutional pilot disable public signup and provision users through the dashboard's normal password setup flow. Canonical site URL: `https://www.syrka.co/cam`. Self-service invitations and recovery are not yet implemented. Configure the canonical production site URL in the future dedicated project; do not point the hosted deployment at a local test stack.
 
 Bootstrap each institution and initial administrator through an operator transaction after creating the Auth account:
 
@@ -43,7 +43,7 @@ Campus builds with `/cam` basePath. Once the actual Campus hostname is verified,
 { source: '/cam/:path*', destination: 'https://<verified-campus-host>/cam/:path*' },
 ```
 
-These rules are not applied. Never commit a placeholder hostname. Do not strip or duplicate the prefix. Verify direct loads, refresh, RSC navigation, server actions, auth cookies, `/cam/_next/*` and signed file downloads. If proxy origin validation requires configuration, allow only the exact canonical website origin; never wildcard origins.
+The corresponding `/cam` rules have been applied with verified origin `https://syrka-campus.vercel.app`; see deployment-verification.md. Never commit a placeholder hostname. Do not strip or duplicate the prefix. Verify direct loads, refresh, RSC navigation, server actions, auth cookies, `/cam/_next/*` and signed file downloads. If proxy origin validation requires configuration, allow only the exact canonical website origin; never wildcard origins.
 
 Test existing `/`, `/workspace`, `/workspace/tools` before and after integration. Prepare a minimal change in the website repository, test it and commit using its normal deployment process. No DNS change is needed. Do not redeploy or alter Workspace.
 
