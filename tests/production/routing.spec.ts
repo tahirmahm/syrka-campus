@@ -9,11 +9,20 @@ test("Canonical Campus proxy serves login and its real assets", async ({
   });
   await page.goto("/cam/login");
   await expect(
-    page.getByRole("heading", { name: "Continue your journey." }),
+    page.getByRole("heading", { name: "Sign in to Campus" }),
   ).toBeVisible();
   const logo = page.getByRole("img", { name: "Syrka", exact: true });
+  await expect(logo).toBeVisible();
+  expect(await logo.evaluate((el) => getComputedStyle(el).maskImage)).toContain(
+    "wordmark.jpg",
+  );
   expect(
-    await logo.evaluate((el: HTMLImageElement) => el.naturalWidth),
+    await page.evaluate(async () => {
+      const image = new Image();
+      image.src = "/cam/brand/wordmark.jpg";
+      await image.decode();
+      return image.naturalWidth;
+    }),
   ).toBeGreaterThan(0);
   expect(failures).toEqual([]);
   await page.screenshot({

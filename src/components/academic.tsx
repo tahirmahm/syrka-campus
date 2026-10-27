@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { switchInstitution } from "@/lib/actions";
+import { Icon } from "./icon";
 export function PageTop({
   label,
   title,
@@ -20,34 +20,11 @@ export function PageTop({
   );
 }
 export function Empty({ children }: { children: React.ReactNode }) {
-  return <div className="empty">{children}</div>;
-}
-export function TenantPicker({
-  memberships,
-  current,
-}: {
-  memberships: {
-    institution_id: string;
-    role: string;
-    institutions: unknown;
-  }[];
-  current?: string;
-}) {
   return (
-    <form action={switchInstitution} className="toolbar">
-      <label>
-        Institution
-        <select name="institution" defaultValue={current}>
-          {memberships.map((m) => (
-            <option key={m.institution_id} value={m.institution_id}>
-              {(m.institutions as { name?: string })?.name ?? m.institution_id}{" "}
-              · {m.role}
-            </option>
-          ))}
-        </select>
-      </label>
-      <button>Switch →</button>
-    </form>
+    <div className="empty">
+      <Icon name="info" size={16} />
+      <span>{children}</span>
+    </div>
   );
 }
 export function Hidden({
@@ -85,21 +62,58 @@ export function CourseCard({
   };
   const term = course.academic_terms as { name: string };
   return (
-    <article className="card">
+    <article className="card course-card">
       <div className="card-top">
         <span className="eyebrow">
-          {c.code} / {course.section}
+          {c.code} · Section {course.section}
         </span>
         <span className="pill">{c.credits} credits</span>
       </div>
+      <div className="course-symbol">
+        <Icon name="book" size={18} />
+      </div>
       <h3>{c.title}</h3>
-      <p>{c.description}</p>
+      <p className="course-description">{c.description}</p>
+      <p className="course-meta">
+        <Icon name="calendar" size={13} />
+        {term.name}
+      </p>
       <div className="row">
-        <span className="small">{term.name}</span>
-        <Link href={`/courses/${course.id}?institution=${tenant}`}>
-          Open course ↗
+        <span className="small">Capacity {course.capacity}</span>
+        <Link
+          className="text-link"
+          href={`/courses/${course.id}?institution=${tenant}`}
+        >
+          Open course
+          <Icon name="arrow" size={15} />
         </Link>
       </div>
     </article>
+  );
+}
+export function Status({ published }: { published: boolean }) {
+  return (
+    <span
+      className={`status ${published ? "status-published" : "status-draft"}`}
+    >
+      <Icon name={published ? "check" : "clock"} size={12} />
+      {published ? "Published" : "Draft"}
+    </span>
+  );
+}
+export function DateChip({ value }: { value: string }) {
+  const date = new Date(value);
+  return (
+    <div
+      className="date-chip"
+      aria-label={date.toLocaleDateString("en-GB", { timeZone: "UTC" })}
+    >
+      <strong>
+        {date.toLocaleDateString("en-GB", { day: "2-digit", timeZone: "UTC" })}
+      </strong>
+      <span>
+        {date.toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" })}
+      </span>
+    </div>
   );
 }

@@ -2,7 +2,7 @@
 
 A multi-tenant academic platform. Pilot development includes registration, course delivery, text assignments, timed assessments, marking, attendance, calendars and weighted course results. Hosted institutional acceptance remains pending.
 
-**Public URL: [www.syrka.co/cam](https://www.syrka.co/cam).** GitHub main deploys to the dedicated Hobby Vercel project; the Syrka website proxies `/cam`. The owner-provided EU Supabase backend is initialized and hosted pilot tests pass. The current release adds one-click student/faculty/administrator demo access in a separate sample institution and one-time setup for the Praxis Institute administrator. See [status](docs/status.md) and [verification](docs/deployment-verification.md) for exact release evidence and remaining scope.
+**Public URL: [www.syrka.co/cam](https://www.syrka.co/cam).** GitHub main deploys to the dedicated Hobby Vercel project; the Syrka website proxies `/cam`. The owner-provided EU Supabase backend is initialized and hosted pilot tests pass. The interface uses a light-only academic design system, responsive role-aware navigation and one-click student/faculty/administrator demo access in a separate sample institution. See [status](docs/status.md) and [verification](docs/deployment-verification.md) for exact release evidence and remaining scope.
 
 ## Development
 
@@ -47,3 +47,5 @@ The harness refuses databases with existing public tables and creates test Auth/
 Live unauthenticated routing checks: `npm run test:production`.
 
 Hosted pilot browser tests: `CAMPUS_TEST_FIXTURE_PATH=<private fixture> npm run test:hosted`. The fixture and administrator keys must remain outside Git.
+
+Redesign regression checks: `npm run test:redesign` after a configured production build. This uses only read-only demo tours and cancels withdrawal; it does not reset academic records. Set `CAMPUS_BROWSER_BASE_URL=https://www.syrka.co` to verify production and optionally `CAMPUS_SCREENSHOT_DIR=<output directory>` to capture desktop/mobile evidence. See [redesign notes](docs/redesign.md).

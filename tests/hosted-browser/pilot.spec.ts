@@ -95,6 +95,20 @@ test("Hosted student, faculty and administrator journey through the real interfa
     await student.goto(
       `/cam/courses/${fixture.offering}?institution=${tenant}`,
     );
+    const [download] = await Promise.all([
+      student.waitForEvent("download"),
+      student
+        .getByRole("link", { name: `Browser syllabus ${runLabel}` })
+        .click(),
+    ]);
+    expect(await download.failure()).toBeNull();
+    const downloaded = await download.path();
+    expect(downloaded).not.toBeNull();
+    expect(
+      readFileSync(downloaded as string)
+        .subarray(0, 5)
+        .toString(),
+    ).toBe("%PDF-");
     const work = student.locator("article").filter({
       has: student.getByRole("heading", {
         name: assignmentTitle,
@@ -120,29 +134,45 @@ test("Hosted student, faculty and administrator journey through the real interfa
     await review.locator("summary").click();
     await review.locator('[name="score"]').fill("88");
     await review.locator('[name="feedback"]').fill("Clear and well supported.");
-    await Promise.all([
+    const [draftResponse] = await Promise.all([
       faculty.waitForResponse(
         (r) =>
           r.request().method() === "POST" && r.url().includes("/cam/courses/"),
       ),
       review.getByRole("button", { name: "Save grade" }).click(),
     ]);
+    await draftResponse.finished();
     await student.goto(`/cam/grades?institution=${tenant}`);
     await expect(
-      student.getByRole("cell", { name: assignmentTitle, exact: true }),
+      student.getByRole("row").filter({ hasText: assignmentTitle }),
     ).toHaveCount(0);
     await review.locator('[name="publish"]').check();
-    await Promise.all([
+    const [publishResponse] = await Promise.all([
       faculty.waitForResponse(
         (r) =>
           r.request().method() === "POST" && r.url().includes("/cam/courses/"),
       ),
       review.getByRole("button", { name: "Save grade" }).click(),
     ]);
+    await publishResponse.finished();
     await student.reload();
     const row = student.getByRole("row").filter({ hasText: assignmentTitle });
     await expect(row).toContainText("88 / 100");
     await expect(row).toContainText("Clear and well supported.");
+    await student.goto(`/cam/registration?institution=${tenant}`);
+    const registration = student.locator(".registration-row").filter({
+      has: student.locator(
+        `input[name="offering"][value="${fixture.offering}"]`,
+      ),
+    });
+    await registration
+      .getByRole("button", { name: "Withdraw", exact: true })
+      .click();
+    await student
+      .getByRole("dialog", { name: "Withdraw from this course?" })
+      .getByRole("button", { name: "Confirm withdrawal" })
+      .click();
+    await expect(registration).toContainText("Withdrawn");
     await login(foreign, fixture.users.foreign_admin);
     await foreign.goto(
       `/cam/courses/${fixture.offering}?institution=${tenant}`,
@@ -181,14 +211,14 @@ test("One-click demo access needs no email verification and stays in the demo in
         .getByRole("button", { name: `Explore as ${role}`, exact: false })
         .click();
       await expect(page).toHaveURL(/\/cam\/dashboard$/);
-      await expect(page.getByRole("status")).toContainText(
-        "DEMONSTRATION CAMPUS",
-      );
-      await expect(page.locator('select[name="institution"]')).toContainText(
-        "Syrka Demonstration Campus",
-      );
       await expect(
-        page.locator('select[name="institution"]'),
+        page.getByRole("status", { name: "Demonstration environment" }),
+      ).toContainText("Demonstration campus");
+      await expect(
+        page.locator('select[name="institution"]:visible'),
+      ).toContainText("Syrka Demonstration Campus");
+      await expect(
+        page.locator('select[name="institution"]:visible'),
       ).not.toContainText("Praxis Institute");
       if (role === "administrator") {
         await page.goto("/cam/admin");

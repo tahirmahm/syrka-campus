@@ -1,5 +1,6 @@
+import { SubmitButton } from "@/components/submit-button";
 import { session } from "@/lib/session";
-import { PageTop, TenantPicker, Hidden, Empty } from "@/components/academic";
+import { PageTop, Hidden, Empty } from "@/components/academic";
 import { createStructure, membershipChange } from "@/lib/actions";
 export default async function Admin({
   searchParams,
@@ -7,7 +8,7 @@ export default async function Admin({
   searchParams: Promise<{ institution?: string }>;
 }) {
   const { institution } = await searchParams;
-  const { db, memberships, membership } = await session(institution);
+  const { db, membership } = await session(institution);
   if (!membership) return <Empty>No institution selected.</Empty>;
   if (membership.role !== "admin")
     return <Empty>Institutional administrator access is required.</Empty>;
@@ -84,11 +85,11 @@ export default async function Admin({
   return (
     <>
       <PageTop
-        label="05 / INSTITUTIONAL ADMINISTRATION"
-        title="A well-organised institution."
+        label="Institution workspace"
+        title="Institutional administration"
         description="Academic structure, access and oversight."
       />
-      <TenantPicker memberships={memberships} current={tenant} />
+
       <section>
         <h2>Academic configuration</h2>
         {forms.map((f) => (
@@ -99,7 +100,27 @@ export default async function Admin({
               <input type="hidden" name="kind" value={f.kind} />
               {f.fields.map((key) => (
                 <label key={key}>
-                  {key.replaceAll("_", " ")}
+                  {(
+                    {
+                      name: "Name",
+                      code: "Code",
+                      department_id: "Department",
+                      starts_on: "Starts on",
+                      ends_on: "Ends on",
+                      title: "Course title",
+                      description: "Description",
+                      credits: "Credits",
+                      course_id: "Course",
+                      term_id: "Academic term",
+                      section: "Section",
+                      capacity: "Course capacity",
+                      offering_id: "Course offering",
+                      user_id: "Faculty reference",
+                      opens_at: "Registration opens (UTC)",
+                      closes_at: "Registration closes (UTC)",
+                      withdrawal_closes_at: "Withdrawal deadline (UTC)",
+                    } as Record<string, string>
+                  )[key] ?? key}
                   {selects[key] ? (
                     <select name={key} required>
                       <option value="">Select…</option>
@@ -141,7 +162,7 @@ export default async function Admin({
                   <input type="checkbox" name="published" /> Publish offering
                 </label>
               )}
-              <button>Create →</button>
+              <SubmitButton>Create </SubmitButton>
             </form>
           </details>
         ))}
@@ -179,17 +200,22 @@ export default async function Admin({
                 <input type="checkbox" name="active" defaultChecked /> Active
                 membership
               </label>
-              <button>Save membership →</button>
+              <SubmitButton>Save membership </SubmitButton>
             </form>
           </details>
         )}
-        <div className="card table-wrap">
+        <div
+          className="card table-wrap"
+          role="region"
+          aria-label="Academic records table"
+          tabIndex={0}
+        >
           <table>
             <thead>
               <tr>
-                <th>User</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th scope="col">User</th>
+                <th scope="col">Role</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -206,13 +232,18 @@ export default async function Admin({
       </section>
       <section>
         <h2>Enrollment oversight</h2>
-        <div className="card table-wrap">
+        <div
+          className="card table-wrap"
+          role="region"
+          aria-label="Academic records table"
+          tabIndex={0}
+        >
           <table>
             <thead>
               <tr>
-                <th>Student</th>
-                <th>Offering</th>
-                <th>Status</th>
+                <th scope="col">Student</th>
+                <th scope="col">Offering</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>

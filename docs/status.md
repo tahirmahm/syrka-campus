@@ -15,7 +15,7 @@ The first pilot workflows are implemented. This is not yet the complete Moodle/C
 
 ## Implemented
 
-- Responsive interface, original brand assets, light/dark appearance, labelled forms and keyboard focus.
+- Responsive light-only interface, original brand masks, consistent SVG icons, labelled desktop sidebar, mobile navigation drawer, labelled forms and keyboard focus.
 - Supabase email/password sessions, refresh proxy, isolated `/cam` cookies, server-side authorization and institution switching.
 - Departments, terms, courses, sections, faculty assignments, memberships and registration windows.
 - Searchable catalog, credits, prerequisites, transactional registration/withdrawal, waitlists, promotion and duplicate/capacity validation.

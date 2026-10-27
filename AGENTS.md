@@ -14,8 +14,8 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 
 - public/brand contains the user's authoritative source JPGs. Never redraw, reinterpret, stretch or replace them. Preserve black/white identity and clear space.
 - Symbol for compact branding and favicon; full wordmark for authentication.
-- Porcelain #F8F9F6, sage #E6EEE8, forest #315B4D, ink #222A27, sand #F3EDE3, gold #D5B875.
-- Wayfinding clarity, original iconography, serif headings and sans-serif information. Responsive layouts, keyboard access, visible focus, semantic labels and accessible dark mode. No WCAG conformance claim without an audit.
+- Light palette: ivory #FAFAF8, white #FFFFFF, cloud #F1F3F5, charcoal #26282B, slate blue #536D91, powder blue #E8EFF8, lavender #EEEAF7, apricot #F7E9DE, border #E2E5E9, muted #606974. Retire green/dark themes.
+- Wayfinding clarity, original iconography, serif headings and sans-serif information. Responsive layouts, keyboard access, visible focus, semantic labels and light-only appearance. No WCAG conformance claim without an audit.
 
 ## Security
 
@@ -46,3 +46,15 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 - Praxis Institute is real institutional data; demo/verification institutions are separate. Do not reset or seed real institutions as demonstrations.
 - Hosted verification scripts require explicit private operator credential/fixture files and mutate only their own verification records. Keep all such files ignored and out of logs.
 - Supabase breached-password protection is a known Pro-only advisor warning; do not upgrade to remove it. Minimum password strength is configured independently.
+
+- Redesign release: light only, no system dark preference or toggle. Use consistent SVG icons, never emoji/text-arrow navigation. Preserve official logo pixels via luminance-mask rendering; do not redraw. Mobile navigation uses an accessible modal drawer, never a scrolling desktop row. See docs/redesign.md.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
