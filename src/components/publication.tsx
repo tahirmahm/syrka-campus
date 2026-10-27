@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/submit-button";
 import { publishDelivery } from "@/lib/actions";
 import { Hidden } from "./academic";
 export function Publication({
@@ -19,7 +20,9 @@ export function Publication({
       <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="record" value={id} />
       <input type="hidden" name="published" value={String(!published)} />
-      <button className="quiet">{published ? "Unpublish" : "Publish"} →</button>
+      <SubmitButton className="quiet">
+        {published ? "Unpublish" : "Publish"}{" "}
+      </SubmitButton>
     </form>
   );
 }
