@@ -184,6 +184,13 @@ export function Shell({
               </Link>
             </>
           )}
+          <div className="nav-apps">
+            <p className="nav-group-label">Syrka Apps</p>
+            <a className="nav-item" href="https://www.syrka.co/workspace">
+              <Icon name="workspace" />
+              <span>Workspace</span>
+            </a>
+          </div>
         </nav>
         <div className="sidebar-bottom">
           <div className="profile">
