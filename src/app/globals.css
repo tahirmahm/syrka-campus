@@ -23,7 +23,7 @@
   box-sizing: border-box;
 }
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-padding-top: 100px;
   background: var(--bg);
   color-scheme: light !important;
@@ -127,7 +127,7 @@ button:disabled {
   background: transparent;
   color: var(--action);
   padding: 8px 10px;
-  min-height: 40px;
+  min-height: 44px;
 }
 .quiet:hover {
   background: var(--selected);
@@ -172,7 +172,7 @@ textarea {
 }
 input::placeholder,
 textarea::placeholder {
-  color: #77808b;
+  color: var(--muted);
 }
 input:hover,
 select:hover,
@@ -350,7 +350,7 @@ form p.small {
 .institution-switch select {
   font-size: 11px;
   padding: 9px 8px;
-  min-height: 40px;
+  min-height: 44px;
   background: var(--bg);
   text-overflow: ellipsis;
 }
@@ -371,7 +371,7 @@ form p.small {
   display: flex;
   align-items: center;
   gap: 11px;
-  min-height: 43px;
+  min-height: 44px;
   padding: 10px 12px;
   color: #58616c;
   border-radius: 7px;
@@ -843,7 +843,7 @@ section + section {
 }
 .course-tabs a {
   padding: 8px 10px;
-  min-height: 38px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1229,7 +1229,7 @@ section + section {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  color: #747d88;
+  color: var(--muted);
   font-size: 10px;
 }
 .mobile-header {
@@ -1591,7 +1591,7 @@ section[id] {
   .course-tabs a {
     font-size: 11px;
     padding: 7px 8px;
-    min-height: 38px;
+    min-height: 44px;
   }
   .module-card {
     gap: 12px;
@@ -1688,7 +1688,7 @@ section[id] {
     padding-left: 46px;
   }
   .resource-row form button {
-    min-height: 38px;
+    min-height: 44px;
   }
   .grade-summary {
     gap: 12px;
@@ -1776,4 +1776,20 @@ section[id] {
 }
 .confirm-dialog .icon-button {
   flex-shrink: 0;
+}
+
+label:has(> input[type="checkbox"]),
+label:has(> input[type="radio"]) {
+  min-height: 44px;
+  padding: 7px 0;
+  line-height: 1.65;
+  margin-bottom: 8px;
+}
+.quiet {
+  min-height: 44px;
+}
+.drawer-close {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
 }

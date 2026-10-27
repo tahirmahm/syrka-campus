@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { Brand } from "./brand";
+import { trapDialogFocus } from "./dialog-focus";
 import { Icon, type IconName } from "./icon";
 import { switchInstitution } from "@/lib/actions";
 import { logout } from "@/app/login/actions";
@@ -32,7 +33,7 @@ export function Shell({
     (m) =>
       m.institution_id === (query.get("institution") ?? defaultInstitution),
   );
-  const role = current?.role ?? "student";
+  const role = current?.role ?? "account";
   const tenant = current?.institution_id;
   const demo = !!tenant && tenant === demoInstitution;
   const name =
@@ -95,6 +96,7 @@ export function Shell({
     },
     { label: "Calendar", path: "/calendar", icon: "calendar" },
   ];
+  const visibleDestinations = current ? destinations : destinations.slice(0, 1);
   const active = (dest: Destination) =>
     dest.path === "/my-courses"
       ? path === "/my-courses" || path.startsWith("/courses/")
@@ -102,7 +104,7 @@ export function Shell({
         ? path.startsWith("/assessments") || path.startsWith("/attempts/")
         : path === dest.path;
   const page =
-    destinations.find(active)?.label ??
+    visibleDestinations.find(active)?.label ??
     (path === "/admin" ? "Administration" : "Campus");
   function navigation() {
     return (
@@ -156,7 +158,7 @@ export function Shell({
                 ? "Academic workspace"
                 : "Learning"}
           </p>
-          {destinations.map((dest) => (
+          {visibleDestinations.map((dest) => (
             <Link
               key={dest.path}
               href={`${dest.path}${tenant ? `?institution=${tenant}` : ""}`}
@@ -199,7 +201,9 @@ export function Shell({
                   ? "Institution administrator"
                   : role === "faculty"
                     ? "Faculty member"
-                    : "Student"}
+                    : role === "student"
+                      ? "Student"
+                      : "Membership pending"}
               </span>
             </div>
           </div>
@@ -249,7 +253,11 @@ export function Shell({
         </header>
         <main id="main" tabIndex={-1}>
           {demo && (
-            <div className="demo-banner" role="status">
+            <div
+              className="demo-banner"
+              role="status"
+              aria-label="Demonstration environment"
+            >
               <Icon name="info" size={16} />
               <span>
                 <strong>Demonstration campus</strong>
@@ -271,6 +279,11 @@ export function Shell({
         ref={drawer}
         className="navigation-drawer"
         aria-label="Campus navigation"
+        onKeyDown={trapDialogFocus}
+        onCancel={(event) => {
+          event.preventDefault();
+          close();
+        }}
         onClick={(e) => {
           if (e.target === drawer.current) close();
         }}

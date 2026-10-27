@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/submit-button";
 import { login, demoLogin } from "./actions";
 import { configured } from "@/lib/supabase";
 import { Brand } from "@/components/brand";
@@ -101,10 +102,10 @@ export default async function Login({
                 required
               />
             </label>
-            <button disabled={!ready}>
+            <SubmitButton disabled={!ready} pendingLabel="Signing in…">
               Sign in
               <Icon name="arrow" size={17} />
-            </button>
+            </SubmitButton>
           </form>
           {ready && process.env.CAMPUS_DEMO_INSTITUTION_ID && (
             <section className="demo-access" aria-label="Demo access">
@@ -112,7 +113,8 @@ export default async function Login({
               <p>Try a sample institution. No email verification needed.</p>
               <form action={demoLogin} className="demo-actions">
                 {(["student", "faculty", "admin"] as const).map((role) => (
-                  <button
+                  <SubmitButton
+                    pendingLabel="Opening…"
                     key={role}
                     name="role"
                     value={role}
@@ -134,7 +136,7 @@ export default async function Login({
                           ? "Faculty"
                           : "Student"}
                     </span>
-                  </button>
+                  </SubmitButton>
                 ))}
               </form>
             </section>

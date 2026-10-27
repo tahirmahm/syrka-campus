@@ -23,3 +23,21 @@ Branding uses the exact official raster assets as luminance masks. This produces
 Read-only aggregate destinations use existing session-scoped queries and RLS. They add no academic capabilities or fabricated data. Instructor names are displayed only if authorized data supplies them; no identities are invented from UUIDs.
 
 Verification evidence and screenshot links will be recorded after implementation.
+
+## Milestone 2: shared shell
+
+Implemented a labelled desktop sidebar, role-specific destinations, a native-dialog mobile drawer with explicit Tab wrapping and Escape focus restoration, the institution switcher, user/sign-out controls, active navigation and breadcrumbs. Official images are rendered as luminance masks on light surfaces. Dark preferences and the toggle have no active styling path. Inter and Lucide are pinned, open-source dependencies.
+
+Checks: strict build and lint passed. All seven requested widths passed student route overflow/light checks. The mobile focus test found a Chromium boundary case; the explicit trap fixed it and the targeted test passed.
+
+## Milestone 3: student experience
+
+Replaced the login hero with a restrained light authentication layout and compact, consistent demo actions. Dashboard now groups current authorized courses, unfinished upcoming assignments, assessments, announcements, calendar and actual published feedback. New read-only My Courses, Assignments, Assessments and Calendar destinations use existing RLS-protected tables.
+
+Courses have contextual anchor navigation, chronological modules, file-type/resource rows, compact empty states and a registration explanation when content is unavailable to a non-enrolled viewer. Catalog adds a supported department filter. Registration retains the existing transactional action and adds status labels plus native confirmation for withdrawal. Grades separate final course results, assessment scores/feedback and configured weighting.
+
+## Milestone 4: faculty and administration
+
+Shared typography, controls, tables, status badges and pending-submit buttons apply to assigned-course delivery, submissions, assessments, marking, attendance, calendar and administrative configuration. Existing actions and field names are retained. No unsupported institution-profile, rubric, transcript or completion controls were added.
+
+Checks: 16 SQL tests and all six hosted API verification groups passed. The actual hosted-backend browser journey passed, including drafts/final submission, draft-grade secrecy, publication, cross-tenant denial, scoped cookies, withdrawal and sign-out. Three demo roles remained usable. Automated WCAG A/AA checks passed for representative pages and the mobile drawer. Full conformance is not claimed.

@@ -1,6 +1,7 @@
 "use client";
 import { useId, useRef } from "react";
 import { Icon } from "./icon";
+import { trapDialogFocus } from "./dialog-focus";
 import { SubmitButton } from "./submit-button";
 /** Keep the existing enclosing server-action form and its validated hidden fields. */
 export function ConfirmWithdraw({ course }: { course: string }) {
@@ -25,6 +26,11 @@ export function ConfirmWithdraw({ course }: { course: string }) {
         ref={dialog}
         className="confirm-dialog"
         aria-labelledby={id}
+        onKeyDown={trapDialogFocus}
+        onCancel={(event) => {
+          event.preventDefault();
+          close();
+        }}
         onClick={(e) => {
           if (e.target === dialog.current) close();
         }}

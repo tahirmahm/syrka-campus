@@ -1,3 +1,4 @@
+import { Icon } from "@/components/icon";
 import { SubmitButton } from "@/components/submit-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -51,7 +52,7 @@ export default async function AttemptPage({
         description={`Deadline: ${new Date(a.expires_at).toLocaleString("en-GB", { timeZone: "UTC" })} UTC`}
       />
       <Link href={`/assessments/${a.assessment_id}?institution=${tenant}`}>
-        Assessment
+        <Icon name="back" size={15} /> Back to assessment
       </Link>
       {notice && (
         <p className="notice" role="status">

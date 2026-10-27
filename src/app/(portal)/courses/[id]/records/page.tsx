@@ -1,3 +1,4 @@
+import { Icon } from "@/components/icon";
 import { SubmitButton } from "@/components/submit-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -83,11 +84,14 @@ export default async function Records({
         title="Academic records"
         description={c.title}
       />
-      <Link href={`/courses/${id}?institution=${tenant}`}> Course</Link>
+      <Link className="text-link" href={`/courses/${id}?institution=${tenant}`}>
+        <Icon name="back" size={15} />
+        Back to course
+      </Link>
       {staff && (
         <p>
           <a href={`/cam/courses/${id}/export?institution=${tenant}`}>
-            Export authorized gradebook CSV
+            <Icon name="download" size={15} /> Export gradebook CSV
           </a>
         </p>
       )}

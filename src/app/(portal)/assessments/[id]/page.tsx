@@ -1,3 +1,4 @@
+import { Icon } from "@/components/icon";
 import { SubmitButton } from "@/components/submit-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -64,7 +65,7 @@ export default async function Assessment({
         description={`${a.time_limit_minutes ?? "No"} minute limit · ${a.attempt_limit} attempt(s)`}
       />
       <Link href={`/courses/${a.offering_id}?institution=${tenant}`}>
-        Course
+        <Icon name="back" size={15} /> Back to course
       </Link>
       {notice && (
         <p className="notice" role="status">

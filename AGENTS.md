@@ -48,3 +48,13 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 - Supabase breached-password protection is a known Pro-only advisor warning; do not upgrade to remove it. Minimum password strength is configured independently.
 
 - Redesign release: light only, no system dark preference or toggle. Use consistent SVG icons, never emoji/text-arrow navigation. Preserve official logo pixels via luminance-mask rendering; do not redraw. Mobile navigation uses an accessible modal drawer, never a scrolling desktop row. See docs/redesign.md.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

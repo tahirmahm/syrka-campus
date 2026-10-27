@@ -7,7 +7,7 @@ test("Unconfigured deployment fails closed and preserves /cam routing", async ({
     /^http:\/\/127\.0\.0\.1:3000\/cam\/login\?notice=setup$/,
   );
   await expect(
-    page.getByRole("heading", { name: "Continue your journey." }),
+    page.getByRole("heading", { name: "Sign in to Campus" }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
   await expect(page.getByRole("status")).toContainText(
@@ -16,7 +16,12 @@ test("Unconfigured deployment fails closed and preserves /cam routing", async ({
   const image = page.getByRole("img", { name: "Syrka", exact: true });
   await expect(image).toBeVisible();
   expect(
-    await image.evaluate((el: HTMLImageElement) => el.naturalWidth),
+    await page.evaluate(async () => {
+      const image = new Image();
+      image.src = "/cam/brand/wordmark.jpg";
+      await image.decode();
+      return image.naturalWidth;
+    }),
   ).toBeGreaterThan(0);
   for (const route of ["courses", "registration", "grades", "admin"]) {
     await page.goto(`/cam/${route}`);

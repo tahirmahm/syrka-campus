@@ -39,6 +39,18 @@ export default async function Course({
   const teaches =
     membership.role === "admin" ||
     (membership.role === "faculty" && !!assignment);
+  const { data: enrollment, error: enrollmentError } = teaches
+    ? { data: null, error: null }
+    : await db
+        .from("enrollments")
+        .select("status")
+        .eq("institution_id", tenant)
+        .eq("offering_id", id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+  if (enrollmentError) throw new Error("Course access unavailable");
+  const canLearn =
+    teaches || ["enrolled", "completed"].includes(enrollment?.status ?? "");
   const [modules, materials, assignments, announcements] = await Promise.all(
     ["modules", "materials", "assignments", "announcements"].map((t) =>
       db
@@ -79,7 +91,12 @@ export default async function Course({
         title={c.title}
         description={`${c.credits} credits · ${(offering.academic_terms as unknown as { name: string }).name}`}
       />
-      <CourseTabs tenant={tenant} offering={id} teaches={teaches} />
+      <CourseTabs
+        tenant={tenant}
+        offering={id}
+        teaches={teaches}
+        overviewOnly={!canLearn}
+      />
       {notice && (
         <p className="notice" role="status">
           {notice}
@@ -92,250 +109,289 @@ export default async function Course({
           {offering.syllabus || "The syllabus has not been added yet."}
         </p>
       </section>
-      <section id="modules" className="course-section">
-        <div className="section-heading">
-          <h2>Weekly learning path</h2>
-          <span className="small">{modules.data?.length ?? 0} modules</span>
+      {!canLearn && (
+        <div className="notice">
+          <p>
+            {enrollment?.status === "waitlisted"
+              ? "You are on the waitlist. Learning materials become available when you are enrolled."
+              : "You are viewing the course overview. Learning materials and assignments are available to enrolled students and assigned faculty."}
+          </p>
+          {membership.role === "student" && (
+            <Link
+              className="text-link"
+              href={`/registration?institution=${tenant}`}
+            >
+              View registration
+              <Icon name="arrow" size={15} />
+            </Link>
+          )}
         </div>
-        <div className="module-list">
-          {modules.data?.map((m, index) => (
-            <article className="module-card" key={m.id}>
-              <span className="module-index">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <h3>{m.title}</h3>
-                <p>{m.description}</p>
-                {teaches && (
-                  <div className="row">
-                    <Status published={m.published} />
+      )}
+      {canLearn && (
+        <>
+          <section id="modules" className="course-section">
+            <div className="section-heading">
+              <h2>Weekly learning path</h2>
+              <span className="small">{modules.data?.length ?? 0} modules</span>
+            </div>
+            <div className="module-list">
+              {modules.data?.map((m, index) => (
+                <article className="module-card" key={m.id}>
+                  <span className="module-index">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3>{m.title}</h3>
+                    <p>{m.description}</p>
+                    {teaches && (
+                      <div className="row">
+                        <Status published={m.published} />
+                        <Publication
+                          tenant={tenant}
+                          offering={id}
+                          kind="modules"
+                          id={m.id}
+                          published={m.published}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+            {!modules.data?.length && (
+              <Empty>No modules have been published for this course yet.</Empty>
+            )}
+          </section>
+          <section className="grid">
+            <article id="readings" className="card course-section">
+              <h2>Readings & resources</h2>
+              {materials.data?.map((m) => (
+                <div className="resource-row" key={m.id}>
+                  <span className="resource-icon">
+                    <Icon
+                      name={m.external_url ? "external" : "file"}
+                      size={18}
+                    />
+                  </span>
+                  {m.external_url ? (
+                    <a
+                      href={m.external_url}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <span>
+                        {m.title}
+                        <span className="resource-type">External resource</span>
+                      </span>
+                      <Icon name="external" size={15} />
+                    </a>
+                  ) : (
+                    <a href={`/cam/files/${m.id}?institution=${tenant}`}>
+                      <span>
+                        {m.title}
+                        <span className="resource-type">
+                          {m.object_path?.split(".").pop()?.toUpperCase() ??
+                            "Document"}{" "}
+                          · Secure download
+                        </span>
+                      </span>
+                      <Icon name="download" size={16} />
+                    </a>
+                  )}
+                  {teaches && (
                     <Publication
                       tenant={tenant}
                       offering={id}
-                      kind="modules"
+                      kind="materials"
                       id={m.id}
                       published={m.published}
                     />
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              ))}
+              {!materials.data?.length && (
+                <Empty>
+                  No readings have been published for this course yet.
+                </Empty>
+              )}
             </article>
-          ))}
-        </div>
-        {!modules.data?.length && (
-          <Empty>No modules have been published for this course yet.</Empty>
-        )}
-      </section>
-      <section className="grid">
-        <article id="readings" className="card course-section">
-          <h2>Readings & resources</h2>
-          {materials.data?.map((m) => (
-            <div className="resource-row" key={m.id}>
-              <span className="resource-icon">
-                <Icon name={m.external_url ? "external" : "file"} size={18} />
-              </span>
-              {m.external_url ? (
-                <a
-                  href={m.external_url}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <span>
-                    {m.title}
-                    <span className="resource-type">External resource</span>
-                  </span>
-                  <Icon name="external" size={15} />
-                </a>
-              ) : (
-                <a href={`/cam/files/${m.id}?institution=${tenant}`}>
-                  <span>
-                    {m.title}
-                    <span className="resource-type">
-                      {m.object_path?.split(".").pop()?.toUpperCase() ??
-                        "Document"}{" "}
-                      · Secure download
-                    </span>
-                  </span>
-                  <Icon name="download" size={16} />
-                </a>
-              )}
-              {teaches && (
-                <Publication
-                  tenant={tenant}
-                  offering={id}
-                  kind="materials"
-                  id={m.id}
-                  published={m.published}
-                />
-              )}
-            </div>
-          ))}
-          {!materials.data?.length && (
-            <Empty>No readings have been published for this course yet.</Empty>
-          )}
-        </article>
-        <article id="announcements" className="card course-section">
-          <h2>Announcements</h2>
-          {announcements.data?.map((a) => (
-            <div className="announcement" key={a.id}>
-              <h3>{a.title}</h3>
-              <p>{a.body}</p>
-              {teaches && (
-                <Publication
-                  tenant={tenant}
-                  offering={id}
-                  kind="announcements"
-                  id={a.id}
-                  published={a.published}
-                />
-              )}
-            </div>
-          ))}
-          {!announcements.data?.length && (
-            <Empty>No course announcements yet.</Empty>
-          )}
-        </article>
-      </section>
-      <section id="assignments" className="course-section">
-        <div className="section-heading">
-          <h2>Assignments</h2>
-          <span className="small">Instructions, submission & feedback</span>
-        </div>
-        {assignments.data?.map((a) => {
-          const mine = submissions?.find(
-            (s) => s.assignment_id === a.id && s.user_id === user.id,
-          );
-          return (
-            <article
-              className="card assignment-card"
-              id={`assignment-${a.id}`}
-              key={a.id}
-            >
-              <div className="card-top">
-                <Status published={a.published} />
-                <span className="small">{a.max_points} points</span>
-              </div>
-              <h3>{a.title}</h3>
-              {teaches && (
-                <Publication
-                  tenant={tenant}
-                  offering={id}
-                  kind="assignments"
-                  id={a.id}
-                  published={a.published}
-                />
-              )}
-              <p style={{ whiteSpace: "pre-wrap" }}>{a.instructions}</p>
-              <p className="small">
-                Due{" "}
-                {new Date(a.due_at).toLocaleString("en-GB", {
-                  timeZone: "UTC",
-                })}{" "}
-                UTC · Maximum {a.max_submissions} final submissions
-              </p>
-              {membership.role === "student" && (
-                <form action={submit}>
-                  <Hidden tenant={tenant} offering={id} />
-                  <input type="hidden" name="assignment" value={a.id} />
-                  <label>
-                    Your response
-                    <textarea
-                      name="body"
-                      defaultValue={mine?.body ?? ""}
-                      maxLength={100000}
+            <article id="announcements" className="card course-section">
+              <h2>Announcements</h2>
+              {announcements.data?.map((a) => (
+                <div className="announcement" key={a.id}>
+                  <h3>{a.title}</h3>
+                  <p>{a.body}</p>
+                  {teaches && (
+                    <Publication
+                      tenant={tenant}
+                      offering={id}
+                      kind="announcements"
+                      id={a.id}
+                      published={a.published}
                     />
-                  </label>
-                  <p className="small">
-                    Status: {mine?.status ?? "Not started"} / Final submissions:{" "}
-                    {mine?.revision ?? 0}
-                  </p>
-                  <SubmitButton
-                    name="finalize"
-                    value="false"
-                    className="secondary"
-                  >
-                    Save draft
-                  </SubmitButton>{" "}
-                  <SubmitButton name="finalize" value="true">
-                    Submit final
-                  </SubmitButton>
-                </form>
+                  )}
+                </div>
+              ))}
+              {!announcements.data?.length && (
+                <Empty>No course announcements yet.</Empty>
               )}
-              {teaches &&
-                submissions
-                  ?.filter((s) => s.assignment_id === a.id)
-                  .map((s) => (
-                    <details key={s.id}>
-                      <summary>
-                        Submission {s.user_id.slice(0, 8)} · {s.status}
-                      </summary>
-                      <p style={{ whiteSpace: "pre-wrap" }}>{s.body}</p>
-                      {s.status === "submitted" && (
-                        <form action={grade}>
-                          <Hidden tenant={tenant} offering={id} />
-                          <input type="hidden" name="submission" value={s.id} />
-                          <label>
-                            Score
-                            <input
-                              type="number"
-                              name="score"
-                              min="0"
-                              max={a.max_points}
-                              step="0.01"
-                              required
-                              defaultValue={
-                                (s.grades as unknown as { points?: number })
-                                  ?.points
-                              }
-                            />
-                          </label>
-                          <label>
-                            Feedback
-                            <textarea
-                              name="feedback"
-                              maxLength={10000}
-                              defaultValue={
-                                (s.grades as unknown as { feedback?: string })
-                                  ?.feedback
-                              }
-                            />
-                          </label>
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="publish"
-                              defaultChecked={
-                                (s.grades as unknown as { published?: boolean })
-                                  ?.published
-                              }
-                            />{" "}
-                            Publish to student
-                          </label>
-                          <SubmitButton>Save grade </SubmitButton>
-                        </form>
-                      )}
-                    </details>
-                  ))}
             </article>
-          );
-        })}
-        {!assignments.data?.length && <Empty>No assignments yet.</Empty>}
-      </section>
-      <section id="assessments" className="card course-section">
-        <h2>Quizzes & examinations</h2>
-        {assessments?.map((a) => (
-          <div className="row" key={a.id}>
-            <span>
-              {a.kind.toUpperCase()} · {a.title}
-            </span>
-            <Link href={`/assessments/${a.id}?institution=${tenant}`}>
-              Open assessment
-              <Icon name="arrow" size={15} />
-            </Link>
-          </div>
-        ))}
-        {!assessments?.length && <Empty>No assessments published yet.</Empty>}
-      </section>
+          </section>
+          <section id="assignments" className="course-section">
+            <div className="section-heading">
+              <h2>Assignments</h2>
+              <span className="small">Instructions, submission & feedback</span>
+            </div>
+            {assignments.data?.map((a) => {
+              const mine = submissions?.find(
+                (s) => s.assignment_id === a.id && s.user_id === user.id,
+              );
+              return (
+                <article
+                  className="card assignment-card"
+                  id={`assignment-${a.id}`}
+                  key={a.id}
+                >
+                  <div className="card-top">
+                    <Status published={a.published} />
+                    <span className="small">{a.max_points} points</span>
+                  </div>
+                  <h3>{a.title}</h3>
+                  {teaches && (
+                    <Publication
+                      tenant={tenant}
+                      offering={id}
+                      kind="assignments"
+                      id={a.id}
+                      published={a.published}
+                    />
+                  )}
+                  <p style={{ whiteSpace: "pre-wrap" }}>{a.instructions}</p>
+                  <p className="small">
+                    Due{" "}
+                    {new Date(a.due_at).toLocaleString("en-GB", {
+                      timeZone: "UTC",
+                    })}{" "}
+                    UTC · Maximum {a.max_submissions} final submissions
+                  </p>
+                  {membership.role === "student" && (
+                    <form action={submit}>
+                      <Hidden tenant={tenant} offering={id} />
+                      <input type="hidden" name="assignment" value={a.id} />
+                      <label>
+                        Your response
+                        <textarea
+                          name="body"
+                          defaultValue={mine?.body ?? ""}
+                          maxLength={100000}
+                        />
+                      </label>
+                      <p className="small">
+                        Status: {mine?.status ?? "Not started"} / Final
+                        submissions: {mine?.revision ?? 0}
+                      </p>
+                      <SubmitButton
+                        name="finalize"
+                        value="false"
+                        className="secondary"
+                      >
+                        Save draft
+                      </SubmitButton>{" "}
+                      <SubmitButton name="finalize" value="true">
+                        Submit final
+                      </SubmitButton>
+                    </form>
+                  )}
+                  {teaches &&
+                    submissions
+                      ?.filter((s) => s.assignment_id === a.id)
+                      .map((s) => (
+                        <details key={s.id}>
+                          <summary>
+                            Submission {s.user_id.slice(0, 8)} · {s.status}
+                          </summary>
+                          <p style={{ whiteSpace: "pre-wrap" }}>{s.body}</p>
+                          {s.status === "submitted" && (
+                            <form action={grade}>
+                              <Hidden tenant={tenant} offering={id} />
+                              <input
+                                type="hidden"
+                                name="submission"
+                                value={s.id}
+                              />
+                              <label>
+                                Score
+                                <input
+                                  type="number"
+                                  name="score"
+                                  min="0"
+                                  max={a.max_points}
+                                  step="0.01"
+                                  required
+                                  defaultValue={
+                                    (s.grades as unknown as { points?: number })
+                                      ?.points
+                                  }
+                                />
+                              </label>
+                              <label>
+                                Feedback
+                                <textarea
+                                  name="feedback"
+                                  maxLength={10000}
+                                  defaultValue={
+                                    (
+                                      s.grades as unknown as {
+                                        feedback?: string;
+                                      }
+                                    )?.feedback
+                                  }
+                                />
+                              </label>
+                              <label>
+                                <input
+                                  type="checkbox"
+                                  name="publish"
+                                  defaultChecked={
+                                    (
+                                      s.grades as unknown as {
+                                        published?: boolean;
+                                      }
+                                    )?.published
+                                  }
+                                />{" "}
+                                Publish to student
+                              </label>
+                              <SubmitButton>Save grade </SubmitButton>
+                            </form>
+                          )}
+                        </details>
+                      ))}
+                </article>
+              );
+            })}
+            {!assignments.data?.length && <Empty>No assignments yet.</Empty>}
+          </section>
+          <section id="assessments" className="card course-section">
+            <h2>Quizzes & examinations</h2>
+            {assessments?.map((a) => (
+              <div className="row" key={a.id}>
+                <span>
+                  {a.kind.toUpperCase()} · {a.title}
+                </span>
+                <Link href={`/assessments/${a.id}?institution=${tenant}`}>
+                  Open assessment
+                  <Icon name="arrow" size={15} />
+                </Link>
+              </div>
+            ))}
+            {!assessments?.length && (
+              <Empty>No assessments published yet.</Empty>
+            )}
+          </section>
+        </>
+      )}
       {teaches && (
         <section id="teaching" className="course-section">
           <div className="section-heading">

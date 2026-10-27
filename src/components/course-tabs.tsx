@@ -18,10 +18,12 @@ export function CourseTabs({
   tenant,
   offering,
   teaches,
+  overviewOnly = false,
 }: {
   tenant: string;
   offering: string;
   teaches: boolean;
+  overviewOnly?: boolean;
 }) {
   const hash = useSyncExternalStore(
     subscribe,
@@ -30,16 +32,18 @@ export function CourseTabs({
   );
   return (
     <nav className="course-tabs" aria-label="Course navigation">
-      {items.map((i) => (
-        <a
-          key={i.id}
-          href={`#${i.id}`}
-          aria-current={hash === `#${i.id}` ? "location" : undefined}
-        >
-          <Icon name={i.icon} size={14} />
-          {i.label}
-        </a>
-      ))}
+      {items
+        .filter((i) => !overviewOnly || i.id === "overview")
+        .map((i) => (
+          <a
+            key={i.id}
+            href={`#${i.id}`}
+            aria-current={hash === `#${i.id}` ? "location" : undefined}
+          >
+            <Icon name={i.icon} size={14} />
+            {i.label}
+          </a>
+        ))}
       <Link href={`/courses/${offering}/records?institution=${tenant}`}>
         <Icon name="grade" size={14} />
         Grades & records
