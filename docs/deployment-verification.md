@@ -42,3 +42,15 @@ Two browser tests passed with a local production build using the real hosted bac
 Seventeen performance policy warnings were resolved by separating writer actions from existing read policies. The remaining `auth_leaked_password_protection` warning requires a paid Supabase plan; no upgrade was made. [Supabase password-security documentation](https://supabase.com/docs/guides/auth/password-security) confirms the Pro-plan requirement. Twelve-character mixed-character requirements are configured independently.
 
 Shared demonstration passwords, email identities and membership roles are protected by an operator-managed private registry and database triggers. Visitors can explore academic workflows without disabling the shared demo logins. Operators must deliberately unregister those protections before rotating demo credentials.
+
+## Final hosted release evidence
+
+- Canonical production release: main `ab0af111f210801852a861bbb926c821eceaa049`, Git deployment `dpl_24NMuT3QkYuZd62wswzRm2ywK3D4`, READY.
+- PR #4 CI passed with 16 SQL tests, five independent PostgreSQL tests, two unconfigured-browser tests, lint and build.
+- Both authenticated hosted browser tests passed through www.syrka.co/cam: full role workflow and three one-click demo roles without email verification.
+- Four canonical production routing/mobile/preservation checks passed after backend activation.
+- Actual signed syllabus PDF downloaded successfully through the website proxy.
+- An isolated temporary identity completed one-time password setup, sign-out and subsequent password login on the canonical domain.
+- Hosted migration history contains nine applied versions. Remaining warning: Pro-only leaked-password protection; no paid upgrade was made.
+- Removed both temporary verification institutions, their files and eight temporary Auth users after the checks. Preserved the demonstration campus and Praxis Institute.
+- Earlier backend-capacity/access blockers in this document are historical and resolved for the supplied dedicated project.

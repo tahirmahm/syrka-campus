@@ -10,8 +10,8 @@ The first pilot workflows are implemented. This is not yet the complete Moodle/C
 - Dedicated Supabase project: `pftbpimhyophitfuzcxn`, EU West 1, supplied by the owner through a new account. All nine migrations applied and recorded. Existing Syrka databases were not modified.
 - Existing website proxy rules committed in tahirmahm/syrka.v12 PR #22. Existing Workspace rules and cron configuration preserved. No DNS changes.
 - Praxis Institute and its owner-approved administrator membership created. A private one-time account setup link is prepared; it is not stored in Git.
-- Separate Syrka Demonstration Campus provisioned with three demo roles and sample academic records. One-click access is part of the pending Git release. Demo credentials remain server-only.
-- Production backend/demo environment variables configured. The next Git release activates the updated app and demo interface; final production browser checks remain pending at this commit.
+- Separate Syrka Demonstration Campus provisioned with three demo roles and sample academic records. One-click access is live and verified through the canonical website. Demo credentials remain server-only.
+- Production backend/demo settings are active. Live authenticated role workflows, one-time password setup, signed downloads and public routing checks passed.
 
 ## Implemented
 
@@ -31,7 +31,7 @@ The first pilot workflows are implemented. This is not yet the complete Moodle/C
 ## Verification
 
 - 16 SQL tests pass against actual migrations, including two institutions, confidentiality, role escalation denial, registration, assignments, assessments and academic records.
-- Five independent PostgreSQL tests pass for registration races (parent plus four scenarios); ninth migration revalidation in CI pending.
+- Five independent PostgreSQL tests pass for registration races (parent plus four scenarios); all nine migrations revalidated in GitHub CI.
 - Six hosted API verification groups pass: structure/isolation, concurrent registration, actual Storage upload/signing, assignments/grades, assessments, records/metadata escalation denial.
 - Two browser tests pass using the local production app with the real hosted backend: student/faculty/admin journey and all three one-click demo roles. The journey includes actual uploads, drafts/final submission, draft-grade confidentiality, publication, foreign-tenant rejection, `/cam` cookie scope and sign-out.
 - Two local setup/mobile Chromium tests and four public production proxy/mobile/preservation smoke tests passed in earlier releases.
@@ -51,3 +51,7 @@ The first pilot workflows are implemented. This is not yet the complete Moodle/C
 No paid infrastructure, subscriptions, APIs or add-ons were enabled.
 
 Shared demonstration passwords, email identities and membership roles are protected by an operator-managed private registry and database triggers. Visitors can explore academic workflows without disabling the shared demo logins. Operators must deliberately unregister those protections before rotating demo credentials.
+
+## Canonical production release verified
+
+GitHub main commit `ab0af111f210801852a861bbb926c821eceaa049` deployed successfully as `dpl_24NMuT3QkYuZd62wswzRm2ywK3D4` from Git. The two authenticated browser tests passed against www.syrka.co/cam, including all three demo roles. Four public smoke tests, a real signed syllabus download and a one-time password setup/sign-out/password-login check also passed. Temporary verification institutions, their files and eight temporary Auth users were removed; Praxis Institute and the separate demonstration campus were preserved.

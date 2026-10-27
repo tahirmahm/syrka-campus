@@ -8,7 +8,7 @@ Dedicated Supabase project: `pftbpimhyophitfuzcxn`, eu-west-1, supplied by the o
 
 ## Migrations and configuration
 
-Eight version-controlled migrations are applied and recorded in `supabase_migrations.schema_migrations`. TCP connections from this environment were refused. The CLI's HTTPS Management API query path was used to apply each migration and its exact filename/version history within a transaction. The CLI's unused database-connection preflight required a resolver-only placeholder; that value was never used to authenticate to PostgreSQL. Do not mistake it for a database credential.
+Nine version-controlled migrations are applied and recorded in `supabase_migrations.schema_migrations`. TCP connections from this environment were refused. The CLI's HTTPS Management API query path was used to apply each migration and its exact filename/version history within a transaction. The CLI's unused database-connection preflight required a resolver-only placeholder; that value was never used to authenticate to PostgreSQL. Do not mistake it for a database credential.
 
 Authenticate the CLI deliberately, link the exact project, inspect history before applying new migrations and never reapply existing versions. CLI `--help` is the command reference. Run security/performance advisors after schema changes. `supabase/config.toml` declares only intended auth/storage settings; undeclared settings must remain unchanged.
 
@@ -43,3 +43,5 @@ The demonstration institution is separate from Praxis Institute and contains cle
 Campus uses `/cam` basePath. Next Link/next-navigation destinations omit the prefix; plain asset/download URLs, cache invalidation and cookie paths include it. Test direct loads, refresh, server actions and downloads through the canonical website after releases. GitHub main remains production's source of truth.
 
 Shared demonstration passwords, email identities and membership roles are protected by an operator-managed private registry and database triggers. Visitors can explore academic workflows without disabling the shared demo logins. Operators must deliberately unregister those protections before rotating demo credentials.
+
+The first hosted verification fixture was cleaned after the successful live tests. Run the API verification script again to create a new isolated fixture before repeating mutable browser journeys. Never substitute Praxis Institute or demonstration credentials for the verification fixture.
