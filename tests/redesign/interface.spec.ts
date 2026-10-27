@@ -83,7 +83,8 @@ for (const width of widths) {
     }
     await page.goto("/cam/my-courses");
     const course = page.getByRole("link", { name: "Open course" }).first();
-    if (await course.count()) {
+    await expect(course).toBeVisible();
+    {
       await course.click();
       await expect(
         page.getByRole("navigation", { name: "Course navigation" }),
@@ -201,7 +202,8 @@ for (const role of ["faculty", "administrator"]) {
       }
       await page.goto("/cam/my-courses");
       const course = page.getByRole("link", { name: "Open course" }).first();
-      if (await course.count()) {
+      await expect(course).toBeVisible();
+      {
         await course.click();
         await expect(
           page.getByRole("heading", { name: "Teaching desk" }),
@@ -271,4 +273,27 @@ test("Representative light pages pass automated WCAG A/AA checks", async ({
   ).toBeVisible();
   await scan();
   await page.keyboard.press("Escape");
+});
+
+test("Unknown pages stay light under a dark system preference", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.emulateMedia({ colorScheme: "dark" });
+  const response = await page.goto("/cam/unknown-redesign-check");
+  expect(response?.status()).toBe(404);
+  await expect(
+    page.getByRole("heading", { name: "We couldn’t find that page." }),
+  ).toBeVisible();
+  await clearLayout(page);
+  await expect(
+    page.getByRole("link", { name: "Return to Campus" }),
+  ).toBeVisible();
+  expect(
+    (
+      await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze()
+    ).violations,
+  ).toEqual([]);
 });

@@ -55,3 +55,7 @@ Shared demonstration passwords, email identities and membership roles are protec
 ## Canonical production release verified
 
 GitHub main commit `ab0af111f210801852a861bbb926c821eceaa049` deployed successfully as `dpl_24NMuT3QkYuZd62wswzRm2ywK3D4` from Git. The two authenticated browser tests passed against www.syrka.co/cam, including all three demo roles. Four public smoke tests, a real signed syllabus download and a one-time password setup/sign-out/password-login check also passed. Temporary verification institutions, their files and eight temporary Auth users were removed; Praxis Institute and the separate demonstration campus were preserved.
+
+## Light wayfinding redesign
+
+The current interface is light-only, with the exact official logos rendered transparently, SVG icons, a role-aware desktop sidebar and an accessible mobile drawer. Login, student priorities, course delivery, catalog, registration, results and staff forms share the revised design system. New aggregate academic destinations are read-only views over existing authorized records. Backend policies, migrations, authentication and academic mutations are unchanged. See [redesign verification and desktop/mobile screenshots](redesign.md).

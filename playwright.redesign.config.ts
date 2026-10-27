@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 const remote = process.env.CAMPUS_BROWSER_BASE_URL;
 export default defineConfig({
+  outputDir: "test-results/redesign",
   testDir: "tests/redesign",
   timeout: 180000,
   expect: { timeout: 20000 },
