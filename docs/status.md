@@ -7,7 +7,7 @@ The first pilot workflows are implemented. This is not yet the complete Moodle/C
 - Canonical public path: https://www.syrka.co/cam, changed from /campus by the owner.
 - Source: https://github.com/tahirmahm/syrka-campus, main; public for now by owner instruction.
 - Exactly one Campus Vercel project, `syrka-campus`, on Hobby, directly linked to GitHub main. Git-triggered deployments verified.
-- Dedicated Supabase project: `pftbpimhyophitfuzcxn`, EU West 1, supplied by the owner through a new account. All eight migrations applied and recorded. Existing Syrka databases were not modified.
+- Dedicated Supabase project: `pftbpimhyophitfuzcxn`, EU West 1, supplied by the owner through a new account. All nine migrations applied and recorded. Existing Syrka databases were not modified.
 - Existing website proxy rules committed in tahirmahm/syrka.v12 PR #22. Existing Workspace rules and cron configuration preserved. No DNS changes.
 - Praxis Institute and its owner-approved administrator membership created. A private one-time account setup link is prepared; it is not stored in Git.
 - Separate Syrka Demonstration Campus provisioned with three demo roles and sample academic records. One-click access is part of the pending Git release. Demo credentials remain server-only.
@@ -30,8 +30,8 @@ The first pilot workflows are implemented. This is not yet the complete Moodle/C
 
 ## Verification
 
-- 15 SQL tests pass against actual migrations, including two institutions, confidentiality, role escalation denial, registration, assignments, assessments and academic records.
-- Five independent PostgreSQL tests pass for registration races (parent plus four scenarios); eighth migration revalidation in CI pending.
+- 16 SQL tests pass against actual migrations, including two institutions, confidentiality, role escalation denial, registration, assignments, assessments and academic records.
+- Five independent PostgreSQL tests pass for registration races (parent plus four scenarios); ninth migration revalidation in CI pending.
 - Six hosted API verification groups pass: structure/isolation, concurrent registration, actual Storage upload/signing, assignments/grades, assessments, records/metadata escalation denial.
 - Two browser tests pass using the local production app with the real hosted backend: student/faculty/admin journey and all three one-click demo roles. The journey includes actual uploads, drafts/final submission, draft-grade confidentiality, publication, foreign-tenant rejection, `/cam` cookie scope and sign-out.
 - Two local setup/mobile Chromium tests and four public production proxy/mobile/preservation smoke tests passed in earlier releases.
@@ -49,3 +49,5 @@ The first pilot workflows are implemented. This is not yet the complete Moodle/C
 - Independent-session races beyond registration and broader assessment/browser coverage.
 
 No paid infrastructure, subscriptions, APIs or add-ons were enabled.
+
+Shared demonstration passwords, email identities and membership roles are protected by an operator-managed private registry and database triggers. Visitors can explore academic workflows without disabling the shared demo logins. Operators must deliberately unregister those protections before rotating demo credentials.

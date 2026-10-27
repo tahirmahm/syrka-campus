@@ -41,3 +41,5 @@ The demonstration institution is separate from Praxis Institute and contains cle
 `tahirmahm/syrka.v12/vercel.json` contains two `/cam` rules targeting `https://syrka-campus.vercel.app/cam` with the prefix retained exactly once. Preserve existing Workspace rules, cron entries, `/`, `/workspace` and `/workspace/tools`. No DNS change is needed. Do not independently redeploy Workspace.
 
 Campus uses `/cam` basePath. Next Link/next-navigation destinations omit the prefix; plain asset/download URLs, cache invalidation and cookie paths include it. Test direct loads, refresh, server actions and downloads through the canonical website after releases. GitHub main remains production's source of truth.
+
+Shared demonstration passwords, email identities and membership roles are protected by an operator-managed private registry and database triggers. Visitors can explore academic workflows without disabling the shared demo logins. Operators must deliberately unregister those protections before rotating demo credentials.

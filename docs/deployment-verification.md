@@ -21,7 +21,7 @@ Seven migrations pass local SQL integration tests and independent PostgreSQL sta
 
 ## Application checks
 
-- 15 SQL tests (parent plus 14 scenarios): two-institution journey, role restrictions, tenant consistency, registration, assignments, grade confidentiality, private-file SQL policies, timed assessments, immutable snapshots, marking, expiry, attendance/calendar and final results.
+- 16 SQL tests (parent plus 14 scenarios): two-institution journey, role restrictions, tenant consistency, registration, assignments, grade confidentiality, private-file SQL policies, timed assessments, immutable snapshots, marking, expiry, attendance/calendar and final results.
 - 5 independent PostgreSQL tests (parent plus 4 race scenarios): last-seat capacity, duplicate registration, competing sections and waitlists.
 - 2 local Chromium tests: setup redirects and mobile login.
 - 4 production Chromium tests: proxy, assets, direct routes/refresh, mobile and preservation of existing website routes.
@@ -35,8 +35,10 @@ Owner supplied dedicated project reference `pftbpimhyophitfuzcxn` and its publis
 
 ## Hosted backend activation
 
-Owner authenticated the Supabase CLI to the dedicated project. Eight migrations are now applied with exact source versions recorded in `supabase_migrations.schema_migrations`. Hosted API checks passed for structure/isolation, a simultaneous last-seat race, real private Storage upload/publication/signing, assignment submission and grade publication, assessment secrecy/marking, attendance/final results and user-metadata escalation denial.
+Owner authenticated the Supabase CLI to the dedicated project. Nine migrations are now applied with exact source versions recorded in `supabase_migrations.schema_migrations`. Hosted API checks passed for structure/isolation, a simultaneous last-seat race, real private Storage upload/publication/signing, assignment submission and grade publication, assessment secrecy/marking, attendance/final results and user-metadata escalation denial.
 
 Two browser tests passed with a local production build using the real hosted backend: the administrator/faculty/student workflow and all three one-click demonstration roles. Praxis Institute and its approved administrator membership are separate from the demonstration campus. Production public keys and server-only encrypted demo settings have been configured; Git deployment of the updated interface and live authenticated smoke tests are the next release gate.
 
 Seventeen performance policy warnings were resolved by separating writer actions from existing read policies. The remaining `auth_leaked_password_protection` warning requires a paid Supabase plan; no upgrade was made. [Supabase password-security documentation](https://supabase.com/docs/guides/auth/password-security) confirms the Pro-plan requirement. Twelve-character mixed-character requirements are configured independently.
+
+Shared demonstration passwords, email identities and membership roles are protected by an operator-managed private registry and database triggers. Visitors can explore academic workflows without disabling the shared demo logins. Operators must deliberately unregister those protections before rotating demo credentials.

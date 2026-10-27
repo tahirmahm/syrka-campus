@@ -8,6 +8,15 @@ export async function setPassword(form: FormData) {
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/login");
+  if (process.env.CAMPUS_DEMO_INSTITUTION_ID) {
+    const { data: demo } = await db
+      .from("memberships")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("institution_id", process.env.CAMPUS_DEMO_INSTITUTION_ID)
+      .maybeSingle();
+    if (demo) redirect("/dashboard");
+  }
   const password = z.string().min(12).max(128).safeParse(form.get("password"));
   if (!password.success || form.get("confirm") !== password.data)
     redirect("/account/password?notice=invalid");

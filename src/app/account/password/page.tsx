@@ -13,6 +13,15 @@ export default async function Password({
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/login");
+  if (process.env.CAMPUS_DEMO_INSTITUTION_ID) {
+    const { data: demo } = await db
+      .from("memberships")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("institution_id", process.env.CAMPUS_DEMO_INSTITUTION_ID)
+      .maybeSingle();
+    if (demo) redirect("/dashboard");
+  }
   const { notice } = await searchParams;
   return (
     <main id="main" className="auth">

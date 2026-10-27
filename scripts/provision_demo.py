@@ -6,6 +6,8 @@ import datetime as dt
 import json
 import os
 import secrets
+import subprocess
+import tempfile
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -103,4 +105,10 @@ if not existing:insert('memberships',{'institution_id':praxis['id'],'user_id':ow
 link=call('/auth/v1/admin/generate_link','POST',{'type':'recovery','email':owner_email})
 owner_settings={'institution_id':praxis['id'],'user_id':owner['id'],'email':owner_email,'setup_link':'https://www.syrka.co/cam/auth/confirm?type=recovery&token_hash='+link['hashed_token']}
 Path('/workspace/scratch/campus-owner-setup.json').write_text(json.dumps(owner_settings));Path('/workspace/scratch/campus-owner-setup.json').chmod(0o600)
+with tempfile.TemporaryDirectory() as work:
+ guard=Path(work)/'register-demo.sql'
+ guard.write_text("insert into campus_private.demo_accounts(user_id,institution_id) select m.user_id,m.institution_id from public.memberships m join public.institutions i on i.id=m.institution_id where i.slug='syrka-demonstration' and m.active on conflict(user_id) do nothing;")
+ env=os.environ.copy();env['SUPABASE_DB_PASSWORD']='unused_for_https_management_query'
+ result=subprocess.run(['npx','supabase','db','query','--linked','--project-ref','pftbpimhyophitfuzcxn','--file',str(guard),'-o','json'],env=env,capture_output=True,text=True,timeout=60)
+ if result.returncode:raise RuntimeError('Demo identity protection could not be registered; check the linked CLI session')
 print('Provisioned isolated demonstration campus, three demo roles, sample academic workflows, and Praxis Institute administrator. No credentials printed.')
