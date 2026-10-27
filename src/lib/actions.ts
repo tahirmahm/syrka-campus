@@ -20,12 +20,10 @@ export async function register(form: FormData) {
   });
   if (error)
     redirect(
-      `/campus/registration?institution=${tenant}&notice=${encodeURIComponent(error.message)}`,
+      `/registration?institution=${tenant}&notice=${encodeURIComponent(error.message)}`,
     );
   revalidatePath("/campus/registration");
-  redirect(
-    `/campus/registration?institution=${tenant}&notice=Registration+updated`,
-  );
+  redirect(`/registration?institution=${tenant}&notice=Registration+updated`);
 }
 export async function submit(form: FormData) {
   const tenant = uuid.parse(form.get("tenant")),
@@ -40,12 +38,10 @@ export async function submit(form: FormData) {
   });
   if (error)
     redirect(
-      `/campus/courses/${offering}?institution=${tenant}&notice=${encodeURIComponent(error.message)}`,
+      `/courses/${offering}?institution=${tenant}&notice=${encodeURIComponent(error.message)}`,
     );
   revalidatePath(`/campus/courses/${offering}`);
-  redirect(
-    `/campus/courses/${offering}?institution=${tenant}&notice=Work+saved`,
-  );
+  redirect(`/courses/${offering}?institution=${tenant}&notice=Work+saved`);
 }
 export async function grade(form: FormData) {
   const tenant = uuid.parse(form.get("tenant")),

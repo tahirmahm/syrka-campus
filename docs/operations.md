@@ -2,10 +2,10 @@
 
 ## Access blockers
 
-1. Create an empty private `tahirmahm/syrka-campus` GitHub repository and grant the integration access. `gh repo create` returned `Resource not accessible by integration (createRepository)`. No connected browser tool was available as a fallback.
-2. Select the Supabase organization explicitly. Existing organization Syrka (`xxwikrftscbssryvcydh`) is Free and already has two active projects. Confirm availability of a third dedicated free project before creation. Do not pause, reuse or delete existing projects to make room.
-3. Create `Syrka Campus` only at zero cost in an EU region. If unavailable, report the blocker; never upgrade.
-4. Create exactly one Vercel `syrka-campus` project after populating the repository. Import GitHub with main as production; check project names immediately before creation to prevent duplicates.
+1. GitHub repository now exists and is public at the owner’s explicit request. Do not change visibility without new instructions.
+2. Owner selected Syrka organization (`xxwikrftscbssryvcydh`). Cost lookup quoted $0/month, but creation of Syrka Campus in eu-west-1 was rejected because owner tahirmahm has reached the two-active-free-project limit. Do not retry without changed capacity; do not pause, delete, reuse or upgrade existing projects.
+3. Hosted migrations, Auth/Storage verification and security advisors remain blocked until a dedicated zero-cost project can be created.
+4. Connected Vercel creation returned HTTP 403 (no project-creation permission). CLI fallback has no authenticated credentials. Owner intervention requested: import GitHub repository or grant appropriate integration access. Exactly one Vercel `syrka-campus` project is authorized, directly connected to GitHub main. Check for an existing project before creating. A deployment without backend configuration is setup-only and is not a completed pilot.
 
 ## Database and auth
 
@@ -34,7 +34,7 @@ Run Supabase security/performance advisors after migration, resolving material f
 
 ## Domain integration
 
-Read-only inspection confirmed Vercel project `syrka12` (`prj_1cL7osrSUHKR2FutAhjdHsn3wGcN`) owns www.syrka.co. Its project routes API returned no routes. `tahirmahm/syrka.v12/next.config.mjs` was empty on both main and the inspected default branch. The default branch was `claude/build-syrka-system-DVli3`; do not assume it is deployed. Existing `/workspace/tools` returned HTTP 200 with matched path `/tools`, so inspect the full deployed configuration before changing routes.
+Read-only inspection confirmed Vercel project `syrka12` (`prj_1cL7osrSUHKR2FutAhjdHsn3wGcN`) owns www.syrka.co. Its project routes API returned no routes. `tahirmahm/syrka.v12/next.config.mjs` was empty on both main and the inspected default branch. The default branch was `claude/build-syrka-system-DVli3`; subsequent deployment inspection confirms the live production source is main commit `476af48f52b4ae0f80dfad9ccf96d1ef1c3b75d3`, with commit message “Route syrka.co/workspace to Syrka Workspace”. Existing `/workspace/tools` returned HTTP 200 with matched path `/tools`, so inspect the full deployed configuration before changing routes.
 
 Campus builds with `/campus` basePath. Once the actual Campus hostname is verified, merge the following proposed rules into the website configuration, preserving its existing rules and ordering:
 
