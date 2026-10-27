@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Syrka Campus
 
-## Getting Started
+A multi-tenant academic platform. This is an initial pilot implementation, not the complete Moodle/Canvas-scale product in the master directive.
 
-First, run the development server:
+**Not deployed.** GitHub repository creation was rejected by the connected integration. The dedicated Supabase backend and GitHub-connected Vercel project have not been provisioned. See [status](docs/status.md) for scope and gaps.
 
-```bash
+## Development
+
+Requires Node.js 24 and npm.
+
+```sh
+npm ci
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000/campus/login. Without backend configuration sign-in is disabled and protected routes redirect to setup; no invented academic data is displayed. Configure only the dedicated Campus project's URL and publishable key. Auth cookies have a separate name and `/campus` scope.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+npm test
+npm run lint
+npm run build
+npx playwright install chromium
+npm run test:browser
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+SQL integration tests execute actual migrations under PostgreSQL-compatible PGlite using authenticated identities in two institutions. Hosted authentication, Storage API behavior and independent concurrent sessions require dedicated Supabase verification.
 
-## Learn More
+- `src/app`: student, faculty and administrator routes.
+- `src/lib`: authenticated sessions, validated actions and user-scoped Supabase access.
+- `supabase/migrations`: schema, RLS, transactional RPCs and private storage policies.
+- `tests`: SQL authorization and browser setup checks.
+- `public/brand`: unmodified official source assets.
+- [Operations](docs/operations.md): provisioning, migrations, bootstrap and domain integration.
+- [Integration boundaries](docs/integrations.md): Workspace and Passport.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+No paid APIs are used. Existing Syrka applications and production infrastructure have not been modified.
