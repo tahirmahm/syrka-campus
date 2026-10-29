@@ -1,4 +1,6 @@
 import {
+  Video,
+  NotebookPen,
   ArrowDownToLine,
   ArrowLeft,
   ArrowRight,
@@ -32,6 +34,8 @@ import {
   Award,
 } from "lucide-react";
 const icons = {
+  video: Video,
+  notes: NotebookPen,
   arrow: ArrowRight,
   back: ArrowLeft,
   external: ArrowUpRight,
