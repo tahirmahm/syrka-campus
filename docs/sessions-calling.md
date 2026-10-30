@@ -97,7 +97,7 @@ Relay-only retest also failed with ICE 701 and no RTP. The probe enforces relay
 policy on both peer construction and SDK configuration updates; recorded policies
 are `relay` for both clients. Both again received signaling (48 and 42 frames),
 showed network feedback and closed their peer connections on leave. Sanitized
-machine-readable evidence is in `docs/verification/sessions-*-2026-10-30.json`.
+machine-readable evidence is in the [Workspace verification directory](https://github.com/tahirmahm/syrka-workspace/tree/8a6c675/docs/verification).
 No QA meeting records or private audio fixtures were retained after these checks.
 
 Changed application files: `src/components/sessions/live-stage.tsx`, `meeting.tsx`,
