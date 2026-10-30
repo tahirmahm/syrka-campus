@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
+  serverExternalPackages: ["ws"],
   basePath: "/cam",
   poweredByHeader: false,
   experimental: { serverActions: { bodySizeLimit: "11mb" } },
