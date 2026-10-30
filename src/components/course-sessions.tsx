@@ -53,7 +53,7 @@ export async function CourseSessions({
             </p>
             <a
               className="button secondary"
-              href={`https://www.syrka.co/workspace/tools/sessions/meeting/${row.id}?source=campus`}
+              href={`https://www.syrka.co/workspace/sessions/meeting/${row.id}?source=campus`}
             >
               Open session
             </a>
@@ -61,7 +61,7 @@ export async function CourseSessions({
               ?.published && (
               <a
                 className="button secondary"
-                href={`https://www.syrka.co/workspace/tools/sessions/meeting/${row.id}?source=campus&view=notes`}
+                href={`https://www.syrka.co/workspace/sessions/meeting/${row.id}?source=campus&view=notes`}
               >
                 Lecture notes
               </a>
@@ -121,7 +121,7 @@ export async function LectureNotes({
               <p>{note.body?.overview?.[0]?.text}</p>
               <a
                 className="button secondary"
-                href={`https://www.syrka.co/workspace/tools/sessions/meeting/${row.id}?source=campus&view=notes`}
+                href={`https://www.syrka.co/workspace/sessions/meeting/${row.id}?source=campus&view=notes`}
               >
                 Read notes & transcript
               </a>
