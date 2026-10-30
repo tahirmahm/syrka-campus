@@ -1,3 +1,4 @@
+import { LectureNotes } from "@/components/course-sessions";
 import Link from "next/link";
 import { session } from "@/lib/session";
 import { currentCourses } from "@/lib/academic-read";
@@ -373,6 +374,7 @@ export default async function Dashboard({
           </section>
         </div>
       </div>
+      <LectureNotes db={db} tenant={tenant} />
     </>
   );
 }

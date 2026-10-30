@@ -49,3 +49,5 @@ Live unauthenticated routing checks: `npm run test:production`.
 Hosted pilot browser tests: `CAMPUS_TEST_FIXTURE_PATH=<private fixture> npm run test:hosted`. The fixture and administrator keys must remain outside Git.
 
 Redesign regression checks: `npm run test:redesign` after a configured production build. This uses only read-only demo tours and cancels withdrawal; it does not reset academic records. Set `CAMPUS_BROWSER_BASE_URL=https://www.syrka.co` to verify production and optionally `CAMPUS_SCREENSHOT_DIR=<output directory>` to capture desktop/mobile evidence. See [redesign notes](docs/redesign.md).
+
+Sessions and Notes integration is additive and uses Campus's own session cookies, roles and database. See [provider eligibility, independent identity boundaries, configuration and rollout gates](docs/sessions-notes.md). The associated Workspace UI requires both Git-linked releases; it never shares service-role credentials or assumes shared Auth identities.

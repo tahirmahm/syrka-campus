@@ -13,6 +13,7 @@ const items: { id: string; label: string; icon: IconName }[] = [
   { id: "assignments", label: "Assignments", icon: "assignment" },
   { id: "assessments", label: "Assessments", icon: "assessment" },
   { id: "announcements", label: "Announcements", icon: "info" },
+  { id: "sessions", label: "Sessions & notes", icon: "video" },
 ];
 export function CourseTabs({
   tenant,

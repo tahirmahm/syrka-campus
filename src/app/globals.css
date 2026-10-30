@@ -1819,3 +1819,4 @@ label:has(> input[type="radio"]) {
 .system-state button {
   margin-top: 12px;
 }
+.lecture-note-item{padding:18px 0;border-top:1px solid var(--border,#e2e5e9)}.lecture-note-item p{margin:8px 0;color:#606974}.lecture-note-item a{margin-right:12px}.card-heading h2:has(svg){display:flex;align-items:center;gap:8px}

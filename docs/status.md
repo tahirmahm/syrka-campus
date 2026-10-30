@@ -59,3 +59,7 @@ GitHub main commit `ab0af111f210801852a861bbb926c821eceaa049` deployed successfu
 ## Light wayfinding redesign
 
 The current interface is light-only, with the exact official logos rendered transparently, SVG icons, a role-aware desktop sidebar and an accessible mobile drawer. Login, student priorities, course delivery, catalog, registration, results and staff forms share the revised design system. New aggregate academic destinations are read-only views over existing authorized records. Backend policies, migrations, authentication and academic mutations are unchanged. See [redesign verification and desktop/mobile screenshots](redesign.md).
+
+## Sessions and Notes feature branch
+
+Adds course scheduling, own-backend Sessions API, enrolled-course authorization, instructor publication and My Lecture Notes. Existing academic features are preserved. The additive migration is verified in disposable SQL tests but has not been installed on the hosted Campus project: current Supabase connection lacks permission. Calling, AI and STT acceptance remain blocked; no completed production claim. See [Sessions release gate](sessions-notes.md).

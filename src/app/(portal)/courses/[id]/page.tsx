@@ -1,3 +1,4 @@
+import { CourseSessions } from "@/components/course-sessions";
 import { SubmitButton } from "@/components/submit-button";
 import { Icon } from "@/components/icon";
 import { CourseTabs } from "@/components/course-tabs";
@@ -91,6 +92,14 @@ export default async function Course({
         title={c.title}
         description={`${c.credits} credits · ${(offering.academic_terms as unknown as { name: string }).name}`}
       />
+      {canLearn && (
+        <CourseSessions
+          db={db}
+          offering={id}
+          tenant={tenant}
+          teaches={teaches}
+        />
+      )}
       <CourseTabs
         tenant={tenant}
         offering={id}

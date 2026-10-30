@@ -95,6 +95,7 @@ export function Shell({
       icon: "grade",
     },
     { label: "Calendar", path: "/calendar", icon: "calendar" },
+    { label: "My Lecture Notes", path: "/lecture-notes", icon: "notes" },
   ];
   const visibleDestinations = current ? destinations : destinations.slice(0, 1);
   const active = (dest: Destination) =>
