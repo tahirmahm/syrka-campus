@@ -20,3 +20,10 @@ Lint, strict TypeScript, 19 unit/database tests, production build, native WebSoc
 build smoke and two setup/mobile browser tests passed. Keep PR #8 and Workspace
 PR #4 in draft until real media and Campus acceptance passes.
 See the [Workspace guest/calling report](https://github.com/tahirmahm/syrka-workspace/blob/feature/sessions-notes/docs/sessions-instant-guests.md).
+
+Workspace hosted Start call creation and real Qwen audio-to-notes regression passed
+on application source `4384384`. Actual two-client LiveKit media remained blocked
+at ICE 701 in default/relay probes, and actual account-free guest Auth returned
+`anonymous_provider_disabled` (422). UI fixtures and SQL tests do not establish
+physical or guest media acceptance. Campus remains a separate hosted access gate.
+See linked Workspace machine-readable evidence; production remains unchanged.
