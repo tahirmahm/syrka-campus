@@ -1,3 +1,8 @@
+import {
+  rankActivities,
+  actionLabel,
+  type Activity,
+} from "@/lib/command/model";
 import { AssignmentTools, StudyTools } from "@/components/command/course-tools";
 import { SubmitButton } from "@/components/submit-button";
 import { Icon } from "@/components/icon";
@@ -85,6 +90,32 @@ export default async function Course({
     description: string;
     credits: number;
   };
+  const activities: Activity[] = [
+    ...(assignments.data ?? []).map((a) => ({
+      id: `assignment:${a.id}`,
+      course: c.code,
+      title: a.title,
+      kind: "assignment" as const,
+      at: a.due_at,
+      href: `#assignment-${a.id}`,
+      state: (submissions?.find(
+        (s) => s.assignment_id === a.id && s.user_id === user.id,
+      )?.status ?? "not-started") as Activity["state"],
+    })),
+    ...(materials.data?.length
+      ? [
+          {
+            id: "reading:course",
+            course: c.code,
+            title: "Continue with the published readings",
+            kind: "reading" as const,
+            href: "#readings",
+            state: "published" as const,
+          },
+        ]
+      : []),
+  ];
+  const courseNext = rankActivities(activities, new Date().toISOString())[0];
   return (
     <>
       <PageTop
@@ -101,27 +132,18 @@ export default async function Course({
             <p>
               {teaches
                 ? "Manage materials, review submissions and publish feedback."
-                : "Open an assignment or continue with the published readings."}
+                : (courseNext?.title ?? "Review your course overview.")}
             </p>
           </div>
           <Link
             className="button"
-            href={
-              teaches
-                ? "#teaching"
-                : assignments.data?.some(
-                      (a) =>
-                        !submissions?.some(
-                          (s) =>
-                            s.assignment_id === a.id &&
-                            s.status === "submitted",
-                        ),
-                    )
-                  ? "#assignments"
-                  : "#readings"
-            }
+            href={teaches ? "#teaching" : (courseNext?.href ?? "#overview")}
           >
-            {teaches ? "Teaching tools" : "Next course activity"}
+            {teaches
+              ? "Teaching tools"
+              : courseNext
+                ? actionLabel(courseNext)
+                : "Course overview"}
             <Icon name="arrow" size={16} />
           </Link>
         </section>

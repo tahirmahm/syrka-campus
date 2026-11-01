@@ -46,4 +46,19 @@ Live `/mail`, `/roadmap`, `/roadmaps`, `/calendar` and `/workspace/sessions` des
 
 ## Verification evidence
 
-Recorded after integrated checks and Preview inspection. Screenshots cover desktop/mobile in both themes; browser/axe checks are not a full assistive-technology or WCAG conformance certification.
+Lint, strict TypeScript production build and 35 unit/database tests passed (17 priority rules plus the existing SQL isolation/confidentiality and emoji regressions). All six fictional journey/theme browser checks passed locally and on the protected Git Preview. Existing authenticated role/navigation regression coverage passed at all seven requested widths; its accessibility scan found a theme-button visible-label/name mismatch, which was fixed and the scan passed on rerun. GitHub CI passed with the independent PostgreSQL concurrency tests and unconfigured auth/setup regressions.
+
+The Preview is protected by Vercel Authentication. Verification uses the current same-project development OIDC identity, scoped to the Preview origin only, never forwarded to Workspace. No protection settings are disabled. Only the two public Supabase URL/publishable-key variables are configured for this feature branch's Preview, allowing existing users to sign in normally. No private demo passwords, privileged keys or other-app credentials are copied. The separate fictional walkthrough needs no Campus account.
+
+Screenshots are captured from the deployed Preview using fictional data, at 1440px desktop and 390px mobile (course narrow view at 320px), in both themes. Browser/axe checks are not a full assistive-technology or WCAG conformance certification.
+
+| View              | Dark                                                         | Light                                                         |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------- |
+| Desktop dashboard | [Screenshot](command-screenshots/desktop-dark-dashboard.png) | [Screenshot](command-screenshots/desktop-light-dashboard.png) |
+| Mobile dashboard  | [Screenshot](command-screenshots/mobile-dark-dashboard.png)  | [Screenshot](command-screenshots/mobile-light-dashboard.png)  |
+| Desktop course    | [Screenshot](command-screenshots/desktop-dark-course.png)    | [Screenshot](command-screenshots/desktop-light-course.png)    |
+| Mobile course     | [Screenshot](command-screenshots/mobile-dark-course.png)     | [Screenshot](command-screenshots/mobile-light-course.png)     |
+
+## Remaining gates
+
+Mail user identity/consent and cross-app action delivery, exact authorised Roadmaps nodes, hosted Sessions admission/media/published notes, live Passport evidence intake and zero-cost Qwen provider/quota configuration are not connected. Their fictional reviewed flows are demonstrable; they are not live integrations. No preview-to-production release is authorised. Physical screen-reader/device testing and a full accessibility audit remain follow-up work.

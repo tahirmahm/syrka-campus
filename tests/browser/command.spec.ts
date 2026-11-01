@@ -1,6 +1,21 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdirSync } from "node:fs";
+// Vercel development identity is sent only to this Preview origin, never Workspace.
+test.beforeEach(async ({ page, baseURL }) => {
+  const token = process.env.VERCEL_OIDC_TOKEN;
+  if (!token || !baseURL || !new URL(baseURL).hostname.endsWith(".vercel.app"))
+    return;
+  const origin = new URL(baseURL).origin;
+  await page.route(`${origin}/**`, async (route) => {
+    await route.continue({
+      headers: {
+        ...route.request().headers(),
+        "x-vercel-trusted-oidc-idp-token": token,
+      },
+    });
+  });
+});
 const output = process.env.CAMPUS_COMMAND_SCREENSHOTS;
 async function capture(page: import("@playwright/test").Page, name: string) {
   if (output) {
@@ -30,7 +45,7 @@ test("Both remembered themes stay accessible without overflow", async ({
       ).toBeVisible();
       if (width === 390 || width === 1440) {
         const result = await new AxeBuilder({ page })
-          .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
           .analyze();
         expect(
           result.violations.map((v) => ({
@@ -197,7 +212,7 @@ test("Every fictional journey is readable in both themes at narrow and desktop w
           ),
         ).toBe(true);
         const result = await new AxeBuilder({ page })
-          .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
           .analyze();
         expect(
           result.violations.map((v) => ({

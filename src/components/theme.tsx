@@ -19,7 +19,7 @@ export function ThemeToggle({
     <button
       type="button"
       className="quiet theme-toggle"
-      aria-label="Toggle colour theme"
+      aria-label={`Toggle colour theme: ${theme === "dark" ? "Light mode" : "Dark mode"}`}
       onClick={() => {
         const next =
           document.documentElement.dataset.theme === "light" ? "dark" : "light";
