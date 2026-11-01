@@ -14,8 +14,8 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 
 - public/brand contains the user's authoritative source JPGs. Never redraw, reinterpret, stretch or replace them. Preserve black/white identity and clear space.
 - Symbol for compact branding and favicon; full wordmark for authentication.
-- Light palette: ivory #FAFAF8, white #FFFFFF, cloud #F1F3F5, charcoal #26282B, slate blue #536D91, powder blue #E8EFF8, lavender #EEEAF7, apricot #F7E9DE, border #E2E5E9, muted #606974. Retire green/dark themes.
-- Wayfinding clarity, original iconography, serif headings and sans-serif information. Responsive layouts, keyboard access, visible focus, semantic labels and light-only appearance. No WCAG conformance claim without an audit.
+- Light palette: ivory #FAFAF8, white #FFFFFF, cloud #F1F3F5, charcoal #26282B, slate blue #536D91, powder blue #E8EFF8, lavender #EEEAF7, apricot #F7E9DE, border #E2E5E9, muted #606974. Dark appearance uses black/neutral surfaces and restrained accents; retain the original light palette.
+- Wayfinding clarity, original iconography, serif headings and sans-serif information. Responsive layouts, keyboard access, visible focus, semantic labels and complete dark/light appearance. No WCAG conformance claim without an audit.
 
 ## Security
 
@@ -47,7 +47,7 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 - Hosted verification scripts require explicit private operator credential/fixture files and mutate only their own verification records. Keep all such files ignored and out of logs.
 - Supabase breached-password protection is a known Pro-only advisor warning; do not upgrade to remove it. Minimum password strength is configured independently.
 
-- Redesign release: light only, no system dark preference or toggle. Use consistent SVG icons, never emoji/text-arrow navigation. Preserve official logo pixels via luminance-mask rendering; do not redraw. Mobile navigation uses an accessible modal drawer, never a scrolling desktop row. See docs/redesign.md.
+- Corrective refinement: preserve original production LMS sidebar, dashboard composition, queries and workflows; dark is default, explicit light/dark cookie preference is rendered server-side. Place toggle in existing header. PR #9 remains separate; no command centre/fictional walkthrough is imported. Current delivery is feature-branch Preview only, never merge/promote automatically. Use consistent SVG icons, never emoji/text-arrow navigation. Preserve official logo pixels via luminance-mask rendering; do not redraw. Mobile navigation uses an accessible modal drawer, never a scrolling desktop row. See docs/redesign.md.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

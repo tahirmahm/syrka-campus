@@ -13,12 +13,10 @@ async function snapshot(page: Page, name: string) {
     });
 }
 async function clearLayout(page: Page) {
-  await expect(
-    page.getByRole("button", { name: /dark appearance|light appearance/i }),
-  ).toHaveCount(0);
+  const theme = await page.locator("html").getAttribute("data-theme");
   expect(
     await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
-  ).toBe("rgb(250, 250, 248)");
+  ).toBe(theme === "dark" ? "rgb(0, 0, 0)" : "rgb(250, 250, 248)");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,

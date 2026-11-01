@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { ThemeToggle } from "./theme";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { Brand } from "./brand";
@@ -248,6 +249,7 @@ export function Shell({
           <span className="role-tag">{role === "admin" ? "Admin" : role}</span>
         </header>
         <header className="topbar">
+          <ThemeToggle />
           <nav aria-label="Breadcrumb">
             <Link href="/dashboard">Campus</Link>
             <Icon name="next" size={14} />

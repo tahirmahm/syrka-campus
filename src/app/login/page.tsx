@@ -1,3 +1,5 @@
+import { ThemeToggle } from "@/components/theme";
+import { cookies } from "next/headers";
 import { SubmitButton } from "@/components/submit-button";
 import { login, demoLogin } from "./actions";
 import { configured } from "@/lib/supabase";
@@ -10,6 +12,10 @@ export default async function Login({
 }) {
   const { notice } = await searchParams;
   const ready = configured();
+  const theme =
+    (await cookies()).get("campus-appearance")?.value === "light"
+      ? "light"
+      : "dark";
   return (
     <main id="main" className="auth">
       <div className="auth-layout">
@@ -58,6 +64,9 @@ export default async function Login({
           </p>
         </section>
         <section className="auth-form">
+          <div className="auth-appearance">
+            <ThemeToggle initialTheme={theme} />
+          </div>
           <div className="auth-mobile-brand">
             <Brand wordmark />
           </div>

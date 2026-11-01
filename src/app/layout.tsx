@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { cookies } from "next/headers";
 export const metadata: Metadata = {
   title: "Syrka Campus",
   description: "A considered space for academic life.",
   icons: { icon: "/cam/brand/symbol.jpg" },
 };
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const theme =
+    (await cookies()).get("campus-appearance")?.value === "light"
+      ? "light"
+      : "dark";
   return (
-    <html lang="en" data-theme="light" style={{ colorScheme: "light" }}>
+    <html lang="en" data-theme={theme} style={{ colorScheme: theme }}>
       <body>
         <a className="skip" href="#main">
           Skip to content
