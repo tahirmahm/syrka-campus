@@ -14,11 +14,13 @@ async function snapshot(page: Page, name: string) {
 }
 async function clearLayout(page: Page) {
   await expect(
-    page.getByRole("button", { name: /dark appearance|light appearance/i }),
-  ).toHaveCount(0);
+    page.getByRole("button", { name: "Toggle colour theme" }),
+  ).toBeVisible();
+  const theme = await page.locator("html").getAttribute("data-theme");
+  expect(["light", "dark"]).toContain(theme);
   expect(
     await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
-  ).toBe("rgb(250, 250, 248)");
+  ).toBe(theme === "light" ? "rgb(250, 250, 248)" : "rgb(0, 0, 0)");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -33,7 +35,7 @@ async function demo(page: Page, role: string) {
   await expect(page).toHaveURL(/\/cam\/dashboard$/);
 }
 for (const width of widths) {
-  test(`Student destinations remain light, readable and within ${width}px`, async ({
+  test(`Student destinations remain themed, readable and within ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -228,7 +230,7 @@ for (const role of ["faculty", "administrator"]) {
   });
 }
 
-test("Representative light pages pass automated WCAG A/AA checks", async ({
+test("Representative themed pages pass automated WCAG A/AA checks", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -275,9 +277,7 @@ test("Representative light pages pass automated WCAG A/AA checks", async ({
   await page.keyboard.press("Escape");
 });
 
-test("Unknown pages stay light under a dark system preference", async ({
-  page,
-}) => {
+test("Unknown pages respect the explicit colour theme", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 844 });
   await page.emulateMedia({ colorScheme: "dark" });
   const response = await page.goto("/cam/unknown-redesign-check");

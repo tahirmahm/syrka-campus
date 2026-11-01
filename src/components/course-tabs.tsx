@@ -12,6 +12,7 @@ const items: { id: string; label: string; icon: IconName }[] = [
   { id: "readings", label: "Readings", icon: "file" },
   { id: "assignments", label: "Assignments", icon: "assignment" },
   { id: "assessments", label: "Assessments", icon: "assessment" },
+  { id: "sessions", label: "Sessions", icon: "video" },
   { id: "announcements", label: "Announcements", icon: "info" },
 ];
 export function CourseTabs({

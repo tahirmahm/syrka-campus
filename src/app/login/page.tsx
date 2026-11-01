@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SubmitButton } from "@/components/submit-button";
 import { login, demoLogin } from "./actions";
 import { configured } from "@/lib/supabase";
@@ -146,6 +147,9 @@ export default async function Login({
               Demo access is temporarily unavailable. Please try again later.
             </p>
           )}
+          <Link className="text-link experience-entry" href="/experience-demo">
+            Explore the academic experience <Icon name="arrow" size={15} />
+          </Link>
           <p className="auth-security">
             <Icon name="shield" size={14} />
             <span>

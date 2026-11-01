@@ -95,8 +95,11 @@ export function Shell({
       icon: "grade",
     },
     { label: "Calendar", path: "/calendar", icon: "calendar" },
+    { label: "Connections", path: "/connections", icon: "apps" },
   ];
-  const visibleDestinations = current ? destinations : destinations.slice(0, 1);
+  const visibleDestinations = current
+    ? destinations
+    : destinations.filter((d) => d.path === "/dashboard");
   const active = (dest: Destination) =>
     dest.path === "/my-courses"
       ? path === "/my-courses" || path.startsWith("/courses/")
