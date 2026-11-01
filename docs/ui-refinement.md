@@ -15,4 +15,4 @@ The before screenshots are from production; after screenshots are from the local
 - [Before desktop](refinement-screenshots/before-1440-light-dashboard.png) / [After light](refinement-screenshots/after-1440-light-dashboard.png) / [After dark](refinement-screenshots/after-1440-dark-dashboard.png)
 - [Before mobile](refinement-screenshots/before-390-light-dashboard.png) / [After light](refinement-screenshots/after-390-light-dashboard.png) / [After dark](refinement-screenshots/after-390-dark-dashboard.png)
 
-Vercel reports the Preview queued in its Hobby concurrent-build queue. Remote Preview acceptance is pending; no paid upgrade or unrelated deployment cancellation is authorised. These local screenshots must not be represented as deployed Preview captures.
+The initial Preview queue cleared without upgrades or interrupting unrelated deployments. Normal existing-account sign-in passed for student, faculty and administrator roles. Remote theme checks identified duplicate toggle visibility under streamed rendering; the fallback selector was corrected. Exact final acceptance is recorded in PR #10. The committed matched screenshots were captured locally, as labelled.

@@ -2009,7 +2009,7 @@ th,
   display: flex;
   justify-content: flex-end;
 }
-body:has(.shell) > .auth-appearance {
+body:has(.shell) .auth-appearance {
   display: none;
 }
 html[data-theme="dark"] .topbar,
