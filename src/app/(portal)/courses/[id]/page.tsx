@@ -1,3 +1,4 @@
+import { AssignmentTools, StudyTools } from "@/components/command/course-tools";
 import { SubmitButton } from "@/components/submit-button";
 import { Icon } from "@/components/icon";
 import { CourseTabs } from "@/components/course-tabs";
@@ -91,6 +92,40 @@ export default async function Course({
         title={c.title}
         description={`${c.credits} credits · ${(offering.academic_terms as unknown as { name: string }).name}`}
       />
+      {canLearn && (
+        <section className="course-action-bar" aria-label="Next course action">
+          <div>
+            <span className="eyebrow">
+              {teaches ? "Teaching workspace" : "Continue learning"}
+            </span>
+            <p>
+              {teaches
+                ? "Manage materials, review submissions and publish feedback."
+                : "Open an assignment or continue with the published readings."}
+            </p>
+          </div>
+          <Link
+            className="button"
+            href={
+              teaches
+                ? "#teaching"
+                : assignments.data?.some(
+                      (a) =>
+                        !submissions?.some(
+                          (s) =>
+                            s.assignment_id === a.id &&
+                            s.status === "submitted",
+                        ),
+                    )
+                  ? "#assignments"
+                  : "#readings"
+            }
+          >
+            {teaches ? "Teaching tools" : "Next course activity"}
+            <Icon name="arrow" size={16} />
+          </Link>
+        </section>
+      )}
       <CourseTabs
         tenant={tenant}
         offering={id}
@@ -166,6 +201,7 @@ export default async function Course({
           <section className="grid">
             <article id="readings" className="card course-section">
               <h2>Readings & resources</h2>
+              <StudyTools />
               {materials.data?.map((m) => (
                 <div className="resource-row" key={m.id}>
                   <span className="resource-icon">
@@ -238,6 +274,21 @@ export default async function Course({
               )}
             </article>
           </section>
+          <section id="sessions" className="card course-section">
+            <h2>Sessions</h2>
+            <p className="small">
+              Course sessions and published notes are not connected on this
+              release. Your institutional schedule remains available in
+              Calendar.
+            </p>
+            <Link
+              className="text-link"
+              href={`/calendar?institution=${tenant}`}
+            >
+              View academic schedule
+              <Icon name="arrow" size={15} />
+            </Link>
+          </section>
           <section id="assignments" className="course-section">
             <div className="section-heading">
               <h2>Assignments</h2>
@@ -275,6 +326,12 @@ export default async function Course({
                     })}{" "}
                     UTC · Maximum {a.max_submissions} final submissions
                   </p>
+                  {membership.role === "student" && (
+                    <AssignmentTools
+                      title={a.title}
+                      submitted={mine?.status === "submitted"}
+                    />
+                  )}
                   {membership.role === "student" && (
                     <form action={submit}>
                       <Hidden tenant={tenant} offering={id} />

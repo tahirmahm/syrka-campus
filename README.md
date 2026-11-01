@@ -2,7 +2,9 @@
 
 A multi-tenant academic platform. Pilot development includes registration, course delivery, text assignments, timed assessments, marking, attendance, calendars and weighted course results. Hosted institutional acceptance remains pending.
 
-**Public URL: [www.syrka.co/cam](https://www.syrka.co/cam).** GitHub main deploys to the dedicated Hobby Vercel project; the Syrka website proxies `/cam`. The owner-provided EU Supabase backend is initialized and hosted pilot tests pass. The interface uses a light-only academic design system, responsive role-aware navigation and one-click student/faculty/administrator demo access in a separate sample institution. See [status](docs/status.md) and [verification](docs/deployment-verification.md) for exact release evidence and remaining scope.
+**Public URL: [www.syrka.co/cam](https://www.syrka.co/cam).** GitHub main deploys to the dedicated Hobby Vercel project; the Syrka website proxies `/cam`. The owner-provided EU Supabase backend is initialized and hosted pilot tests pass. The command-centre feature branch adds a dark-default, complete dual-theme academic design system and responsive role-aware navigation and one-click student/faculty/administrator demo access in a separate sample institution. See [status](docs/status.md) and [verification](docs/deployment-verification.md) for exact release evidence and remaining scope.
+
+Current overhaul: **Preview only**, with isolated fictional journeys at `/cam/experience-demo`. Main and production remain unchanged. See [command-centre delivery](docs/command-centre.md).
 
 ## Development
 

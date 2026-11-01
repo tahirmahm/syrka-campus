@@ -14,8 +14,8 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 
 - public/brand contains the user's authoritative source JPGs. Never redraw, reinterpret, stretch or replace them. Preserve black/white identity and clear space.
 - Symbol for compact branding and favicon; full wordmark for authentication.
-- Light palette: ivory #FAFAF8, white #FFFFFF, cloud #F1F3F5, charcoal #26282B, slate blue #536D91, powder blue #E8EFF8, lavender #EEEAF7, apricot #F7E9DE, border #E2E5E9, muted #606974. Retire green/dark themes.
-- Wayfinding clarity, original iconography, serif headings and sans-serif information. Responsive layouts, keyboard access, visible focus, semantic labels and light-only appearance. No WCAG conformance claim without an audit.
+- Light palette: ivory #FAFAF8, white #FFFFFF, cloud #F1F3F5, charcoal #26282B, slate blue #536D91, powder blue #E8EFF8, lavender #EEEAF7, apricot #F7E9DE, border #E2E5E9, muted #606974. Use restrained forest-green actions and violet intelligence accents in the dark theme.
+- Wayfinding clarity, original iconography, serif headings and sans-serif information. Responsive layouts, keyboard access, visible focus, semantic labels and complete dark/light appearance. No WCAG conformance claim without an audit.
 
 ## Security
 
@@ -35,7 +35,7 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 - PGlite verifies SQL and RLS. Run npm run test:postgres against an EMPTY disposable PostgreSQL database for independent-session registration races. Never target a hosted application database with the test harness. Hosted Auth/Storage still require separate verification.
 - Apply migrations only to dedicated Campus Supabase. Never modify Workspace or Syrka.V12 data.
 - Free tiers only. Never purchase, upgrade, enable paid addons, pause/delete existing projects or accept nonzero costs.
-- Required URL: https://www.syrka.co/cam. A vercel.app URL alone is insufficient.
+- Production URL remains https://www.syrka.co/cam. Current command-centre work is PREVIEW ONLY: feature branch, existing Git Vercel preview, no merge/promotion/domain change. Public fictional /cam/experience-demo needs no backend and must never write fixtures into an account.
 - Inspect the existing website before integration. Preserve /, /workspace and /workspace/tools. Only a tested minimal Campus proxy change is authorized. Avoid DNS changes.
 - Report incomplete features and blockers accurately. No production, advisor, end-to-end or CI claims without observed evidence.
 
@@ -47,7 +47,7 @@ Read README.md, docs/status.md and docs/operations.md before changes.
 - Hosted verification scripts require explicit private operator credential/fixture files and mutate only their own verification records. Keep all such files ignored and out of logs.
 - Supabase breached-password protection is a known Pro-only advisor warning; do not upgrade to remove it. Minimum password strength is configured independently.
 
-- Redesign release: light only, no system dark preference or toggle. Use consistent SVG icons, never emoji/text-arrow navigation. Preserve official logo pixels via luminance-mask rendering; do not redraw. Mobile navigation uses an accessible modal drawer, never a scrolling desktop row. See docs/redesign.md.
+- Command-centre release: dark by default for new users, explicit dark/light cookie preference rendered on the server; no appearance flash. Use consistent SVG icons, never emoji/text-arrow navigation. Preserve official logo pixels via luminance-mask rendering; do not redraw. Mobile navigation uses an accessible modal drawer, never a scrolling desktop row. See docs/redesign.md.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
