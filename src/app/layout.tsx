@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { cookies } from "next/headers";
-import { ThemeToggle } from "@/components/theme";
 export const metadata: Metadata = {
   title: "Syrka Campus",
   description: "A considered space for academic life.",
@@ -23,9 +22,6 @@ export default async function RootLayout({
           Skip to content
         </a>
         {children}
-        <div className="auth-appearance">
-          <ThemeToggle initialTheme={theme} />
-        </div>
       </body>
     </html>
   );
